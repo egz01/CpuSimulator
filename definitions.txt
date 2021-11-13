@@ -1,1 +1,9 @@
-main function will 
+main function - parses cla, then calls asm reader, imemin writer
+
+.word support - check if address exists, if so change according to parameter, if not generate zeroed lines until necessary address exsits.
+
+imemin writer - iterate over Instruction array, for each inst create hex line and write each line to imemin.txt
+
+asm reader - reads .asm file line by line calls parser function, returns array of Instruction struct. handles label translation
+
+instruction parser - recevies a line (after label translation) and parses it into Instruction struct.
