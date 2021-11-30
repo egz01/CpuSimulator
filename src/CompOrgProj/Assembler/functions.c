@@ -50,6 +50,11 @@ void word(int address, long data, FILE* dmemin) {
 	copy_temp();
 }
 
+/// <summary>
+/// fixes trailing, leading, inbetweening whitespaces and tabs in given string
+/// </summary>
+/// <param name="to_fix">input string with various extra spaces and tabs</param>
+/// <param name="fixed">output string (should be at least of equal size to input string) with no extra whitespaces or tabs</param>
 void remove_extra_spaces_and_tabs(char* to_fix, char* fixed)
 {
 	char c;
@@ -94,18 +99,12 @@ void remove_extra_spaces_and_tabs(char* to_fix, char* fixed)
 		}
 		i++;
 	}
+
 	// remove trailing spaces:
 	if (fixed[j - 1] == ' ')
 		fixed[j - 1] = '\0';
 	else
 		fixed[j] = '\0';
-
-	// remove leading spaces:
-	/*if (fixed[0] == ' ')
-	{
-		strncpy(temp, fixed + 1, strlen(fixed));
-		strncpy(fixed, temp, strlen(temp) - 1);
-	}*/
 
 	while ((ptr = strstr(fixed, " ,")) != NULL)
 	{
@@ -125,16 +124,30 @@ void remove_extra_spaces_and_tabs(char* to_fix, char* fixed)
 /// <param name="instruction"> - instruction string as read from file</param>
 /// <param name="output"> - output insturction struct</param>
 /// <returns>type of line received, i.e. {regular instruction, pseudo instruction, label}</returns>
-LineType parse_line(char* instruction, int length, Instruction* output) {
-	char cleaned_instruction[LINE_MAX_LENGTH_IN_BYTES];
-	remove_extra_spaces_and_tabs(instruction, cleaned_instruction);
-
-	char* ptr;
-	char* delim = " ,";
+LineType parse_line(char* line, int length, Instruction* output, short* labels) {
+	char cleaned_line[LINE_MAX_LENGTH_IN_BYTES];
+	remove_extra_spaces_and_tabs(line, cleaned_line);
 	
-	ptr = strtok(cleaned_instruction, delim);
+	if (is_label(cleaned_line)) {
+		// handle label, do nothing?
+	}
+	else if (is_pseudo(cleaned_line)) {
+		// handle pseudo, call some function to alter dmemin.txt
+	}
+	else if (is_all_comment(cleaned_line)) {
+		// handle comment, do nothing?
+	}
+	else {
+		char* ptr;
+		char* delim = " ,";
 
-	ptr = strtok(NULL, delim);
+		ptr = strtok(cleaned_line, delim);
+
+		ptr = strtok(NULL, delim); |
+	}
+
+	
+	
 
 
 

@@ -1,6 +1,10 @@
 #ifndef _DEFINITIONS
 #define _DEFINITIONS
 
+#define BOOL char
+#define TRUE 1
+#define FALSE 0
+
 #define INSTRUCTIONS_MAX_SIZE 4096
 #define LINE_MAX_LENGTH_IN_BYTES 500
 #define LABEL_MAX_LENGTH 50

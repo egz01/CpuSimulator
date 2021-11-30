@@ -7,7 +7,7 @@
 
 int main(int argc, char* argv[])
 {
-#define TEST
+//#define TEST
 #ifdef TEST
 	char output[LINE_MAX_LENGTH_IN_BYTES];
 	char* input = "\t      add     $t1, $t2,  $t3\t, 0, 0    ";
@@ -36,7 +36,7 @@ int main(int argc, char* argv[])
 	{
 		instType = parse_line(line, line_length, &sInstruction);
 
-		switch (instType)\
+		switch (instType)
 		{
 		case REGULAR:
 			encode_instruction(&sInstruction, hex);
