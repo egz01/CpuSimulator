@@ -1,60 +1,18 @@
 #ifndef _FUNCTIONS
 #define _FUNCTIONS
 
+#define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include "structs.h"
+#include "definitions.h"
 
-void copy_temp() {
-	FILE* dmemin = fopen("dmemin.txt", "w");
-	FILE* temp = fopen("temp.txt", "r");
-	char copy_data[10];
-	while (fgets(copy_data, 10, temp) != NULL)
-	{
-		fputs(copy_data, dmemin);
-
-	}
-	fclose(temp);
-	fclose(dmemin);
-}
-
-void word(int address, char data[8]) {
-	int counter = -1;
-	char copy_data[10];
-	FILE* dmemin = fopen("dmemin.txt", "r");
-	FILE* temp = fopen("temp.txt", "w");
-	while (fgets(copy_data, 10, dmemin) != NULL)
-	{
-		counter += 1;
-		if (counter == address)
-		{
-			fputs(data, temp);
-			fputs("\n", temp);
-		}
-		else
-		{
-			//printf("copydata:%s", copy_data);
-			fputs(copy_data, temp);
-			//fputs("\n" ,temp);
-		}
-	}
-	fclose(dmemin);
-	if (counter < address)
-	{
-		if (counter != -1) {
-			fputs("\n", temp);
-		}
-		counter += 1;
-		while (counter < address)
-		{
-			fputs("00000000\n", temp);
-			counter += 1;
-		}
-		fputs(data, temp);
-	}
-	fclose(temp);
-	copy_temp();
-}
-
+void copy_temp();
+void word(int address, long data, FILE* dmemin);
+int read_line(FILE* input, char* line);
+int parse_instruction(char* instruction, int length, Instruction* output);
+int encode_instruction(Instruction* input, char* output);
+void remove_extra_spaces_and_tabs(char* to_fix, char* fixed);
 
 #endif

@@ -141,16 +141,21 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Instruction_Struct.c" />
+    <ClCompile Include="functions.c" />
     <ClCompile Include="main.c" />
-    <ClCompile Include="word_pseudo.c" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\..\io_files\program.asm" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="definitions.h" />
     <ClInclude Include="functions.h" />
     <ClInclude Include="structs.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\..\..\io_files\dmemin.txt" />
+    <Text Include="..\..\..\io_files\imemin.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

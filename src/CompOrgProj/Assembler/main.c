@@ -2,33 +2,44 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include "functions.h"
-
-int read_file(char* buffer, FILE* stream)
-{
-    if (stream == NULL)
-        return 0;
-    int eof = 0;
-    int i = 0;
-    char c;
-    while ((c = fgetc(stream)) != EOF)
-    {
-        buffer[i] = c;
-        i++;
-    }
-    buffer[i] = '\0';
-    return i + 1;
-}
+#include "structs.h"
+#include "definitions.h"
 
 int main(int argc, char* argv[])
 {
-    char buffer[1000];
-    int last;
-    for (int i = 0; i < argc; i++)
-    {
-        FILE* input = fopen(argv[i], "r");
-        last = read_file(buffer, input);
-        fclose(input);
-        printf(buffer);
-        printf("\n");
-    }
+#ifdef TEST
+	char output[LINE_MAX_LENGTH_IN_BYTES];
+	char* input = "add     $t1, $t2,  $t3\t, 0, 0    ";
+	remove_extra_spaces_and_tabs(input, output);
+	printf("\"%s\" -> \"%s\"", input, output);
+#endif
+
+	char line[LINE_MAX_LENGTH_IN_BYTES];
+	char hex[INSTRUCTION_SIZE_IN_BITS / 8 + 1];
+	Instruction sInstruction;
+
+	FILE* fProgram = fopen(argv[1], "r");
+	FILE* fImemin = fopen(argv[2], "w");
+	FILE* fDmemin = fopen(argv[3], "w");
+	int line_counter = 0;
+	LineType instType = 0;
+	int line_length;
+
+	while (line_length = read_line(fProgram, line) > 0)
+	{
+		instType = parse_instruction(line, line_length, &sInstruction);
+
+		switch (instType)\
+		{
+		case REGULAR:
+			encode_instruction(&sInstruction, hex);
+			line_counter += 1;
+			break;
+		case PSEUDO:
+			break;
+		case LABEL:
+			break;
+		}
+	}
+	return 0;
 }
