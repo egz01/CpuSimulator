@@ -56,6 +56,7 @@ void remove_extra_spaces_and_tabs(char* to_fix, char* fixed)
 	int i = 0;
 	int j = 0;
 	int spaced = 0;
+	int first = 1;
 	char temp[INSTRUCTIONS_MAX_SIZE];
 	temp[INSTRUCTIONS_MAX_SIZE - 1] = '\0';
 	char* ptr;
@@ -73,20 +74,38 @@ void remove_extra_spaces_and_tabs(char* to_fix, char* fixed)
 
 		if (!spaced)
 		{
-			fixed[j] = c;
 			if (c == '\t' || c == ' ')
 			{
-				fixed[j] = ' ';
+				if (first)
+				{
+					i++;
+					continue;
+				}
+				else
+					fixed[j] = ' ';
 				spaced = 1;
+			}
+			else
+			{
+				first = 0;
+				fixed[j] = c;
 			}
 			j++;
 		}
 		i++;
 	}
+	// remove trailing spaces:
 	if (fixed[j - 1] == ' ')
 		fixed[j - 1] = '\0';
 	else
 		fixed[j] = '\0';
+
+	// remove leading spaces:
+	/*if (fixed[0] == ' ')
+	{
+		strncpy(temp, fixed + 1, strlen(fixed));
+		strncpy(fixed, temp, strlen(temp) - 1);
+	}*/
 
 	while ((ptr = strstr(fixed, " ,")) != NULL)
 	{
@@ -100,16 +119,24 @@ void remove_extra_spaces_and_tabs(char* to_fix, char* fixed)
 }
 
 /// <summary>
-/// use this function to parse an instruction string into an instruction struct
+/// use this function to parse an input line into an instruction struct.
+/// if the given line doesn't contain an instruction (i.e. pseudo / 
 /// </summary>
 /// <param name="instruction"> - instruction string as read from file</param>
 /// <param name="output"> - output insturction struct</param>
 /// <returns>type of line received, i.e. {regular instruction, pseudo instruction, label}</returns>
-LineType parse_instruction(char* instruction, int length, Instruction* output) {
+LineType parse_line(char* instruction, int length, Instruction* output) {
 	char cleaned_instruction[LINE_MAX_LENGTH_IN_BYTES];
 	remove_extra_spaces_and_tabs(instruction, cleaned_instruction);
 
-	strtok(cleaned_instruction, " ");
+	char* ptr;
+	char* delim = " ,";
+	
+	ptr = strtok(cleaned_instruction, delim);
+
+	ptr = strtok(NULL, delim);
+
+
 
 	output->immediate1 = 12;
 	output->immediate2 = 0;
@@ -127,7 +154,7 @@ LineType parse_instruction(char* instruction, int length, Instruction* output) {
 /// <param name="output"> - encoded instruction</param>
 /// <returns>1 on success, 0 on failure</returns>
 int encode_instruction(Instruction* input, char* output) {
-
+	return 0;
 }
 
 /// <summary>
@@ -158,4 +185,20 @@ int read_line(FILE* input, char* line)
 	}
 	line[i] = '\0';
 	return i;
+}
+
+/// <summary>
+/// 
+/// </summary>
+/// <param name="input"></param>
+/// <param name="output"></param>
+void string_to_lower(const char* input, char* output) {
+	char c;
+	int i = 0;
+	while ((c = input[i]) != '\0')
+	{
+		output[i] = tolower(input[i]);
+		i++;
+	}
+	output[i] = '\0';
 }

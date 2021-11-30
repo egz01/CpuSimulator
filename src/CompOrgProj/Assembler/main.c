@@ -7,11 +7,18 @@
 
 int main(int argc, char* argv[])
 {
+#define TEST
 #ifdef TEST
 	char output[LINE_MAX_LENGTH_IN_BYTES];
-	char* input = "add     $t1, $t2,  $t3\t, 0, 0    ";
+	char* input = "\t      add     $t1, $t2,  $t3\t, 0, 0    ";
 	remove_extra_spaces_and_tabs(input, output);
-	printf("\"%s\" -> \"%s\"", input, output);
+	printf("\"%s\" -> \"%s\"\n", input, output);
+
+	char* input2 = "TeSt+++12312";
+	char output2[LINE_MAX_LENGTH_IN_BYTES];
+	string_to_lower(input2, output2);
+	printf("\"%s\" -> \"%s\"\n", input2, output2);
+	return 0;
 #endif
 
 	char line[LINE_MAX_LENGTH_IN_BYTES];
@@ -27,7 +34,7 @@ int main(int argc, char* argv[])
 
 	while (line_length = read_line(fProgram, line) > 0)
 	{
-		instType = parse_instruction(line, line_length, &sInstruction);
+		instType = parse_line(line, line_length, &sInstruction);
 
 		switch (instType)\
 		{
