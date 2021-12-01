@@ -3,13 +3,13 @@
 #include "definitions.h"
 
 typedef struct _Instruction {
-	char opcode;
-	char rd;
-	char rs;
-	char rt;
-	char rm;
-	short immediate1;
-	short immediate2;
+	enum OpCode opcode;
+	int rd;
+	int rs;
+	int rt;
+	int rm;
+	int immediate1;
+	int immediate2;
 
 } Instruction;
 

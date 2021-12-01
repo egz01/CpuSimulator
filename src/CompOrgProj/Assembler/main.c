@@ -41,7 +41,7 @@ int main(int argc, char* argv[])
 #endif
 
 	char line[LINE_MAX_LENGTH_IN_BYTES];
-	char hex[INSTRUCTION_SIZE_IN_BITS / 8 + 1];
+	char hex[INSTRUCTION_SIZE_IN_CHARS + 1];
 
 	Instruction sInstruction;
 
@@ -54,9 +54,13 @@ int main(int argc, char* argv[])
 	char* temp_label;
 	char* sLabelAddresses[4096] = {0};
 
+	int i = 0;
 	while ((line_length = read_line(fProgram, line)) > 0) {
 		temp_label = parse_label(line);
-		sLabelAddresses[instruction_counter++] = temp_label;
+		if (temp_label) // this line is a label, doesn't count as instruction
+			sLabelAddresses[instruction_counter] = temp_label;
+		else
+			instruction_counter++;
 	}
 	
 	fseek(fProgram, 0, 0);
@@ -68,7 +72,9 @@ int main(int argc, char* argv[])
 		{
 		case REGULAR:
 			encode_instruction(&sInstruction, hex);
-			instruction_counter += 1;
+			fwrite(hex, 1, strlen(hex), fImemin);
+			fwrite("\n", 1, strlen("\n"), fImemin);
+			fflush(fImemin);
 			break;
 		case PSEUDO:
 			break;

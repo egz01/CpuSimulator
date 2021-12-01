@@ -124,7 +124,7 @@ void remove_extra_spaces_and_tabs(char* to_fix, char* fixed)
 /// <param name="instruction"> - instruction string as read from file</param>
 /// <param name="output"> - output insturction struct</param>
 /// <returns>type of line received, i.e. {regular instruction, pseudo instruction, label}</returns>
-LineType parse_line(char* line, Instruction* output, short* labels) {
+LineType parse_line(char* line, Instruction* output, char* labels[INSTRUCTIONS_DEPTH]) {
 	LineType retval = REGULAR;
 	char cleaned_line[LINE_MAX_LENGTH_IN_BYTES];
 	remove_extra_spaces_and_tabs(line, cleaned_line);
@@ -155,7 +155,7 @@ LineType parse_line(char* line, Instruction* output, short* labels) {
 /// <param name="line"> - instruction string</param>
 /// <param name="output"> - instruction struct output</param>
 /// <param name="labels"> - pointer to labels "dictionary"</param>
-void parse_instruction(const char* line, Instruction* output, short* labels)
+void parse_instruction(const char* line, Instruction* output, char* labels[INSTRUCTIONS_DEPTH])
 {
 	char* field;
 	char* delim = " ,";
@@ -200,6 +200,7 @@ char* parse_label(char* line)
 		npLabel = malloc((label_length+1) * sizeof(char));
 		strncpy(npLabel, cleaned_line, label_length);
 		npLabel[label_length] = '\0';
+		string_to_lower(npLabel, npLabel);
 	}
 	return npLabel;
 }
@@ -211,6 +212,40 @@ char* parse_label(char* line)
 /// <param name="output"> - encoded instruction</param>
 /// <returns>1 on success, 0 on failure</returns>
 int encode_instruction(Instruction* input, char output[]) {
+	INSTRUCTION num = 0;
+	int bit_index = INSTRUCTION_SIZE_IN_BITS;
+	char leading_zeros[13] = "000000000000";
+	
+	bit_index -= OPCODE_BITS;
+	num |= ((INSTRUCTION)(input->opcode) << bit_index);
+	
+	bit_index -= RD_BITS;
+	num |= ((INSTRUCTION)(input->rd) << bit_index);
+
+	bit_index -= RS_BITS;
+	num |= ((INSTRUCTION)(input->rs) << bit_index);
+	
+	bit_index -= RT_BITS;
+	num |= ((INSTRUCTION)(input->rt) << bit_index);
+
+	bit_index -= RM_BITS;
+	num |= ((INSTRUCTION)(input->rm) << bit_index);
+
+	bit_index -= IMM1_BITS;
+	num |= (((INSTRUCTION)(input->immediate1) << bit_index) & ((INSTRUCTION)0xfff << bit_index)); // account for sign extension
+	
+	bit_index -= IMM2_BITS;
+	num |= (((INSTRUCTION)(input->immediate2) << bit_index) & ((INSTRUCTION)0xfff << bit_index)); // account for sign extension
+
+	sprintf(output, "%llX", num);
+	int to_pad = INSTRUCTION_SIZE_IN_CHARS - strlen(output);
+
+	if (to_pad)
+	{
+		memcpy(leading_zeros + to_pad, output, INSTRUCTION_SIZE_IN_CHARS - to_pad);
+		memcpy(output, leading_zeros, INSTRUCTION_SIZE_IN_CHARS);
+	}
+
 	return 0;
 }
 
@@ -283,131 +318,143 @@ BOOL is_all_comment(const char* line) {
 OpCode get_op_code_from_string(const char* opcode)
 {
 	string_to_lower(opcode, opcode);
-	if (opcode == "add")
+	if (strcmp(opcode, "add") == 0)
 		return ADD;
 
-	else if (opcode == "sub")
+	else if (strcmp(opcode, "sub") == 0)
 		return SUB;
 
-	else if (opcode == "mac")
+	else if (strcmp(opcode, "mac") == 0)
 		return MAC;
 
-	else if (opcode == "and")
+	else if (strcmp(opcode, "and") == 0)
 		return AND;
 
-	else if (opcode == "or")
+	else if (strcmp(opcode, "or") == 0)
 		return OR;
 
-	else if (opcode == "xor")
+	else if (strcmp(opcode, "xor") == 0)
 		return XOR;
 
-	else if (opcode == "sll")
+	else if (strcmp(opcode, "sll") == 0)
 		return SLL;
 
-	else if (opcode == "sra")
+	else if (strcmp(opcode, "sra") == 0)
 		return SRA;
 
-	else if (opcode == "srl")
+	else if (strcmp(opcode, "srl") == 0)
 		return SRL;
 
-	else if (opcode == "beq")
+	else if (strcmp(opcode, "beq") == 0)
 		return BEQ;
 
-	else if (opcode == "bne")
+	else if (strcmp(opcode, "bne") == 0)
 		return BNE;
 
-	else if (opcode == "blt")
+	else if (strcmp(opcode, "blt") == 0)
 		return BLT;
 
-	else if (opcode == "bgt")
+	else if (strcmp(opcode, "bgt") == 0)
 		return BGT;
 
-	else if (opcode == "ble")
+	else if (strcmp(opcode, "ble") == 0)
 		return BLE;
 
-	else if (opcode == "bge")
+	else if (strcmp(opcode, "bge") == 0)
 		return BGE;
 
-	else if (opcode == "jal")
+	else if (strcmp(opcode, "jal") == 0)
 		return JAL;
 
-	else if (opcode == "lw")
+	else if (strcmp(opcode, "lw") == 0)
 		return LW;
 
-	else if (opcode == "sw")
+	else if (strcmp(opcode, "sw") == 0)
 		return SW;
 
-	else if (opcode == "reti")
+	else if (strcmp(opcode, "reti") == 0)
 		return RETI;
 
-	else if (opcode == "in")
+	else if (strcmp(opcode, "in") == 0)
 		return IN;
 
-	else if (opcode == "out")
+	else if (strcmp(opcode, "out") == 0)
 		return OUT;
 
-	else if (opcode == "halt")
+	else if (strcmp(opcode, "halt") == 0)
 		return HALT;
 }
 
 Register get_register_from_string(const char* reg) {
 	string_to_lower(reg, reg);
-	if (reg == "$zero")
+	if (strcmp(reg, "$zero") == 0)
 		return ZERO;
 
-	else if (reg == "$immm1")
+	else if (strcmp(reg, "$imm1") == 0)
 		return IMM1;
 
-	else if (reg == "$imm2")
+	else if (strcmp(reg, "$imm2") == 0)
 		return IMM2;
 
-	else if (reg == "$v0")
+	else if (strcmp(reg, "$v0") == 0)
 		return V0;
 
-	else if (reg == "$a0")
+	else if (strcmp(reg, "$a0") == 0)
 		return A0;
 
-	else if (reg == "$a1")
+	else if (strcmp(reg, "$a1") == 0)
 		return A1;
 
-	else if (reg == "$a2")
+	else if (strcmp(reg, "$a2") == 0)
 		return A2;
 
-	else if (reg == "$t0")
+	else if (strcmp(reg, "$t0") == 0)
 		return T0;
 
-	else if (reg == "$t1")
+	else if (strcmp(reg, "$t1") == 0)
 		return T1;
 
-	else if (reg == "$t2")
+	else if (strcmp(reg, "$t2") == 0)
 		return T2;
 
-	else if (reg == "$s0")
+	else if (strcmp(reg, "$s0") == 0)
 		return S0;
 
-	else if (reg == "$s1")
+	else if (strcmp(reg, "$s1") == 0)
 		return S1;
 
-	else if (reg == "$s2")
+	else if (strcmp(reg, "$s2") == 0)
 		return S2;
 
-	else if (reg == "$gp")
+	else if (strcmp(reg, "$gp") == 0)
 		return GP;
 
-	else if (reg == "$sp")
+	else if (strcmp(reg, "$sp") == 0)
 		return SP;
 
-	else if (reg == "$ra")
+	else if (strcmp(reg, "$ra") == 0)
 		return RA;
 }
 
-int get_numeric_value(const char* field, short* labels) {
+int get_numeric_value(const char* field, char* labels[INSTRUCTIONS_DEPTH]) {
 	char temp[LINE_MAX_LENGTH_IN_BYTES];
+	char* ptr;
 	int retval;
 	string_to_lower(field, temp);
 	if (temp[0] == '0' && temp[1] == 'x') // hex
 	{
 		sscanf(temp+2, "%x", &retval);
+	}
+	else if ('a' < temp[0] && temp[0] < 'z') // label
+	{
+		int i = 0;
+		for (; i < INSTRUCTIONS_DEPTH; i++)
+		{
+			ptr = labels[i];
+			if (ptr && strcmp(ptr, temp) == 0)
+				break;
+		}
+		retval = i;
 	}
 	else // decimal
 	{

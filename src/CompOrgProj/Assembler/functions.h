@@ -7,13 +7,14 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <stdlib.h>
+#include <math.h>
 #include "structs.h"
 #include "definitions.h"
 
 void copy_temp();
 void word(int address, long data, FILE* dmemin);
 int read_line(FILE* input, char* line);
-LineType parse_line(char* line, Instruction* output, short* labels);
+LineType parse_line(char* line, Instruction* output, char* labels[INSTRUCTIONS_DEPTH]);
 int encode_instruction(Instruction* input, char output[]);
 void remove_extra_spaces_and_tabs(const char* to_fix, char* fixed);
 OpCode get_op_code_from_string(const char* opcode);
