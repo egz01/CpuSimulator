@@ -125,41 +125,70 @@ void remove_extra_spaces_and_tabs(char* to_fix, char* fixed)
 /// <param name="output"> - output insturction struct</param>
 /// <returns>type of line received, i.e. {regular instruction, pseudo instruction, label}</returns>
 LineType parse_line(char* line, int length, Instruction* output, short* labels) {
+	LineType retval = REGULAR;
 	char cleaned_line[LINE_MAX_LENGTH_IN_BYTES];
 	remove_extra_spaces_and_tabs(line, cleaned_line);
 	
 	if (is_label(cleaned_line)) {
 		// handle label, do nothing?
+		retval = LABEL;
 	}
 	else if (is_pseudo(cleaned_line)) {
 		// handle pseudo, call some function to alter dmemin.txt
+		retval = PSEUDO;
 	}
 	else if (is_all_comment(cleaned_line)) {
 		// handle comment, do nothing?
+		retval = COMMENT;
 	}
-	else {
-		char* ptr;
-		char* delim = " ,";
-
-		ptr = strtok(cleaned_line, delim);
-
-		ptr = strtok(NULL, delim); |
+	else { // handle actual instruction
+		parse_instruction(cleaned_line, output, labels);
+		retval = REGULAR;
 	}
 
-	
-	
-
-
-
-	output->immediate1 = 12;
-	output->immediate2 = 0;
-	output->opcode = 0x01;
-	output->rd = 8;
-	output->rm = 8;
-	output->rs = 8;
-	output->rt = 8;
-	return REGULAR;
+	return retval;
 }
+
+/// <summary>
+/// use this function toparse an instruction string into n instruction struct
+/// </summary>
+/// <param name="line"> - instruction string</param>
+/// <param name="output"> - instruction struct output</param>
+/// <param name="labels"> - pointer to labels "dictionary"</param>
+void parse_instruction(const char* line, Instruction* output, short* labels)
+{
+	char* field;
+	char* delim = " ,";
+
+	// get opcode
+	field = strtok(line, delim);
+	output->opcode = get_op_code_from_string(field);
+
+	// get rd
+	field = strtok(NULL, delim);
+	output->rd = get_register_from_string(field);
+
+	// get rs
+	field = strtok(NULL, delim);
+	output->rs = get_register_from_string(field);
+
+	// get rt
+	field = strtok(NULL, delim);
+	output->rt = get_register_from_string(field);
+
+	// get rm
+	field = strtok(NULL, delim);
+	output->rm = get_register_from_string(field);
+
+	// get imm1
+	field = strtok(NULL, delim);
+	output->immediate1 = get_numeric_value(field, labels);
+
+	// get imm2
+	field = strtok(NULL, delim);
+	output->immediate2 = get_numeric_value(field, labels);
+}
+
 /// <summary>
 /// receives an insturction input, encodes instruction into hexadecimal representation
 /// </summary>
@@ -214,4 +243,160 @@ void string_to_lower(const char* input, char* output) {
 		i++;
 	}
 	output[i] = '\0';
+}
+
+BOOL is_label(const char* line) {
+	int i = 0;
+	char c;
+	while ((c = line[i]) != '\0')
+	{
+		if (c == ':')
+			return TRUE;
+		i++;
+	}
+	return FALSE;
+}
+
+BOOL is_pseudo(const char* line) {
+	return (line[0] == '.');
+}
+
+BOOL is_all_comment(const char* line) {
+	return (line[0] == '#');
+}
+
+OpCode get_op_code_from_string(const char* opcode)
+{
+	string_to_lower(opcode, opcode);
+	if (opcode == "add")
+		return ADD;
+
+	else if (opcode == "sub")
+		return SUB;
+
+	else if (opcode == "mac")
+		return MAC;
+
+	else if (opcode == "and")
+		return AND;
+
+	else if (opcode == "or")
+		return OR;
+
+	else if (opcode == "xor")
+		return XOR;
+
+	else if (opcode == "sll")
+		return SLL;
+
+	else if (opcode == "sra")
+		return SRA;
+
+	else if (opcode == "srl")
+		return SRL;
+
+	else if (opcode == "beq")
+		return BEQ;
+
+	else if (opcode == "bne")
+		return BNE;
+
+	else if (opcode == "blt")
+		return BLT;
+
+	else if (opcode == "bgt")
+		return BGT;
+
+	else if (opcode == "ble")
+		return BLE;
+
+	else if (opcode == "bge")
+		return BGE;
+
+	else if (opcode == "jal")
+		return JAL;
+
+	else if (opcode == "lw")
+		return LW;
+
+	else if (opcode == "sw")
+		return SW;
+
+	else if (opcode == "reti")
+		return RETI;
+
+	else if (opcode == "in")
+		return IN;
+
+	else if (opcode == "out")
+		return OUT;
+
+	else if (opcode == "halt")
+		return HALT;
+}
+
+Register get_register_from_string(const char* reg) {
+	string_to_lower(reg, reg);
+	if (reg == "$zero")
+		return ZERO;
+
+	else if (reg == "$immm1")
+		return IMM1;
+
+	else if (reg == "$imm2")
+		return IMM2;
+
+	else if (reg == "$v0")
+		return V0;
+
+	else if (reg == "$a0")
+		return A0;
+
+	else if (reg == "$a1")
+		return A1;
+
+	else if (reg == "$a2")
+		return A2;
+
+	else if (reg == "$t0")
+		return T0;
+
+	else if (reg == "$t1")
+		return T1;
+
+	else if (reg == "$t2")
+		return T2;
+
+	else if (reg == "$s0")
+		return S0;
+
+	else if (reg == "$s1")
+		return S1;
+
+	else if (reg == "$s2")
+		return S2;
+
+	else if (reg == "$gp")
+		return GP;
+
+	else if (reg == "$sp")
+		return SP;
+
+	else if (reg == "$ra")
+		return RA;
+}
+
+int get_numeric_value(const char* field, short* labels) {
+	char temp[LINE_MAX_LENGTH_IN_BYTES];
+	int retval;
+	string_to_lower(field, temp);
+	if (temp[0] == '0' && temp[1] == 'x') // hex
+	{
+		sscanf(temp+2, "%x", &retval);
+	}
+	else // decimal
+	{
+		retval =  atoi(temp);
+	}
+	return retval;
 }

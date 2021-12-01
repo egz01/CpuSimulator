@@ -7,7 +7,7 @@
 
 int main(int argc, char* argv[])
 {
-//#define TEST
+#define TEST
 #ifdef TEST
 	char output[LINE_MAX_LENGTH_IN_BYTES];
 	char* input = "\t      add     $t1, $t2,  $t3\t, 0, 0    ";
@@ -18,6 +18,18 @@ int main(int argc, char* argv[])
 	char output2[LINE_MAX_LENGTH_IN_BYTES];
 	string_to_lower(input2, output2);
 	printf("\"%s\" -> \"%s\"\n", input2, output2);
+
+	const char* input3 = "0xABC";
+	int output3 = get_numeric_value(input3, NULL);
+	printf("\"%s\" -> %d\n", input3, output3);
+
+	const char* input4 = "0xFFFF";
+	int output4 = get_numeric_value(input4, NULL);
+	printf("\"%s\" -> %d\n", input4, output4);
+
+	const char* input5 = "1234";
+	int output5 = get_numeric_value(input5, NULL);
+	printf("\"%s\" -> %d\n", input5, output5);
 	return 0;
 #endif
 
@@ -34,7 +46,7 @@ int main(int argc, char* argv[])
 
 	while (line_length = read_line(fProgram, line) > 0)
 	{
-		instType = parse_line(line, line_length, &sInstruction);
+		instType = parse_line(line, line_length, &sInstruction, NULL);
 
 		switch (instType)
 		{

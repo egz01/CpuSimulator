@@ -14,7 +14,7 @@ typedef struct _Instruction
 } Instruction;
 
 typedef enum _OpCode {
-	ADD,
+	ADD = 0,
 	SUB,
 	MAC,
 	AND,
@@ -41,7 +41,27 @@ typedef enum _OpCode {
 typedef enum _LineType {
 	REGULAR,
 	PSEUDO,
-	LABEL
+	LABEL,
+	COMMENT
 } LineType;
+
+typedef enum _Register {
+	ZERO = 0,
+	IMM1,
+	IMM2,
+	V0,
+	A0,
+	A1,
+	A2,
+	T0,
+	T1,
+	T2,
+	S0,
+	S1,
+	S2,
+	GP,
+	SP,
+	RA,
+} Register;
 
 #endif
