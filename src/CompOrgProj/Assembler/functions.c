@@ -124,7 +124,7 @@ void remove_extra_spaces_and_tabs(char* to_fix, char* fixed)
 /// <param name="instruction"> - instruction string as read from file</param>
 /// <param name="output"> - output insturction struct</param>
 /// <returns>type of line received, i.e. {regular instruction, pseudo instruction, label}</returns>
-LineType parse_line(char* line, int length, Instruction* output, short* labels) {
+LineType parse_line(char* line, Instruction* output, short* labels) {
 	LineType retval = REGULAR;
 	char cleaned_line[LINE_MAX_LENGTH_IN_BYTES];
 	remove_extra_spaces_and_tabs(line, cleaned_line);
@@ -189,17 +189,19 @@ void parse_instruction(const char* line, Instruction* output, short* labels)
 	output->immediate2 = get_numeric_value(field, labels);
 }
 
-int parse_label(char* line, char* output)
+char* parse_label(char* line)
 {
 	int label_length = 0;
 	char cleaned_line[LINE_MAX_LENGTH_IN_BYTES];
+	char* npLabel = NULL;
 	remove_extra_spaces_and_tabs(line, cleaned_line);
 	if (is_label(cleaned_line)) {
 		label_length = strlen(cleaned_line) - 1;
-		strncpy(output, cleaned_line, label_length);
-		output[label_length] = '\0';
+		npLabel = malloc((label_length+1) * sizeof(char));
+		strncpy(npLabel, cleaned_line, label_length);
+		npLabel[label_length] = '\0';
 	}
-	return label_length;
+	return npLabel;
 }
 
 /// <summary>

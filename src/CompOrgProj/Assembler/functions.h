@@ -13,7 +13,7 @@
 void copy_temp();
 void word(int address, long data, FILE* dmemin);
 int read_line(FILE* input, char* line);
-LineType parse_line(char* line, int length, Instruction* output, short* labels);
+LineType parse_line(char* line, Instruction* output, short* labels);
 int encode_instruction(Instruction* input, char output[]);
 void remove_extra_spaces_and_tabs(const char* to_fix, char* fixed);
 OpCode get_op_code_from_string(const char* opcode);
@@ -21,7 +21,7 @@ Register get_register_from_string(const char* field);
 void string_to_lower(const char* input, char* output);
 int get_numeric_value(const char* field, short* labels);
 void parse_instruction(const char* line, Instruction* output, short* labels);
-int parse_label(char* line, char* output);
+char* parse_label(char* line);
 
 BOOL is_label(const char* line);
 BOOL is_pseudo(const char* line);

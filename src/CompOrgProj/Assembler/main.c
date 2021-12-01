@@ -51,17 +51,18 @@ int main(int argc, char* argv[])
 	int instruction_counter = 0;
 	LineType instType = 0;
 	int line_length;
-	int label_length = 0;
-	char label_output[LABEL_MAX_LENGTH];
+	char* temp_label;
+	char* sLabelAddresses[4096] = {0};
 
 	while ((line_length = read_line(fProgram, line)) > 0) {
-		check_for_label_and_add_to_list(line, &instruction_counter);
+		temp_label = parse_label(line);
+		sLabelAddresses[instruction_counter++] = temp_label;
 	}
 	
 	fseek(fProgram, 0, 0);
 
 	while (line_length = read_line(fProgram, line) > 0) {
-		instType = parse_line(line, line_length, &sInstruction, NULL);
+		instType = parse_line(line, &sInstruction, sLabelAddresses);
 
 		switch (instType)
 		{
@@ -75,5 +76,9 @@ int main(int argc, char* argv[])
 			break;
 		}
 	}
+
+	for (int i = 0; i < INSTRUCTIONS_DEPTH; i++)
+		free(sLabelAddresses[i]);
+
 	return 0;
 }
