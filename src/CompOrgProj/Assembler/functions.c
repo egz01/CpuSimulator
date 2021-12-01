@@ -62,8 +62,8 @@ void remove_extra_spaces_and_tabs(char* to_fix, char* fixed)
 	int j = 0;
 	int spaced = 0;
 	int first = 1;
-	char temp[INSTRUCTIONS_MAX_SIZE];
-	temp[INSTRUCTIONS_MAX_SIZE - 1] = '\0';
+	char temp[LINE_MAX_LENGTH_IN_BYTES];
+	temp[LINE_MAX_LENGTH_IN_BYTES - 1] = '\0';
 	char* ptr;
 
 	while ((c = to_fix[i]) != '\0') {
@@ -189,13 +189,26 @@ void parse_instruction(const char* line, Instruction* output, short* labels)
 	output->immediate2 = get_numeric_value(field, labels);
 }
 
+int parse_label(char* line, char* output)
+{
+	int label_length = 0;
+	char cleaned_line[LINE_MAX_LENGTH_IN_BYTES];
+	remove_extra_spaces_and_tabs(line, cleaned_line);
+	if (is_label(cleaned_line)) {
+		label_length = strlen(cleaned_line) - 1;
+		strncpy(output, cleaned_line, label_length);
+		output[label_length] = '\0';
+	}
+	return label_length;
+}
+
 /// <summary>
 /// receives an insturction input, encodes instruction into hexadecimal representation
 /// </summary>
 /// <param name="input"> - Instruction struct to be encoded</param>
 /// <param name="output"> - encoded instruction</param>
 /// <returns>1 on success, 0 on failure</returns>
-int encode_instruction(Instruction* input, char* output) {
+int encode_instruction(Instruction* input, char output[]) {
 	return 0;
 }
 

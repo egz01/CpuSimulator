@@ -1,8 +1,8 @@
 #ifndef _STRUCTS
 #define _STRUCTS
+#include "definitions.h"
 
-typedef struct _Instruction
-{
+typedef struct _Instruction {
 	char opcode;
 	char rd;
 	char rs;
@@ -12,6 +12,12 @@ typedef struct _Instruction
 	short immediate2;
 
 } Instruction;
+
+typedef struct _Label {
+	char name[LABEL_MAX_LENGTH];
+	short address;
+	struct Label* next;
+} Label;
 
 typedef enum _OpCode {
 	ADD = 0,

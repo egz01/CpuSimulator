@@ -7,7 +7,7 @@
 
 int main(int argc, char* argv[])
 {
-#define TEST
+	//#define TEST
 #ifdef TEST
 	char output[LINE_MAX_LENGTH_IN_BYTES];
 	char* input = "\t      add     $t1, $t2,  $t3\t, 0, 0    ";
@@ -30,29 +30,44 @@ int main(int argc, char* argv[])
 	const char* input5 = "1234";
 	int output5 = get_numeric_value(input5, NULL);
 	printf("\"%s\" -> %d\n", input5, output5);
+
+	char* c = "daniel";
+	char temp[500];
+	c += 3;
+	strncpy(temp, c, strlen(c));
+	temp[1] = '\0';
+	printf("%s", temp);
 	return 0;
 #endif
 
 	char line[LINE_MAX_LENGTH_IN_BYTES];
 	char hex[INSTRUCTION_SIZE_IN_BITS / 8 + 1];
+
 	Instruction sInstruction;
 
 	FILE* fProgram = fopen(argv[1], "r");
 	FILE* fImemin = fopen(argv[2], "w");
 	FILE* fDmemin = fopen(argv[3], "w");
-	int line_counter = 0;
+	int instruction_counter = 0;
 	LineType instType = 0;
 	int line_length;
+	int label_length = 0;
+	char label_output[LABEL_MAX_LENGTH];
 
-	while (line_length = read_line(fProgram, line) > 0)
-	{
+	while ((line_length = read_line(fProgram, line)) > 0) {
+		check_for_label_and_add_to_list(line, &instruction_counter);
+	}
+	
+	fseek(fProgram, 0, 0);
+
+	while (line_length = read_line(fProgram, line) > 0) {
 		instType = parse_line(line, line_length, &sInstruction, NULL);
 
 		switch (instType)
 		{
 		case REGULAR:
 			encode_instruction(&sInstruction, hex);
-			line_counter += 1;
+			instruction_counter += 1;
 			break;
 		case PSEUDO:
 			break;
