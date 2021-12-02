@@ -9,6 +9,9 @@ int main(int argc, char* argv[])
 {
 //#define TEST
 #ifdef TEST
+	edit_memory(256, 7, NULL);
+
+
 	if (is_pseudo("     .test."))
 		printf("pseudo\n");
 	char output[LINE_MAX_LENGTH_IN_BYTES];
@@ -44,7 +47,6 @@ int main(int argc, char* argv[])
 
 	char line[LINE_MAX_LENGTH_IN_BYTES];
 	char cleaned_line[LINE_MAX_LENGTH_IN_BYTES];
-	char hex[INSTRUCTION_SIZE_IN_CHARS + 1];
 
 	Instruction sInstruction;
 
@@ -64,7 +66,7 @@ int main(int argc, char* argv[])
 			sLabelAddresses[instruction_counter] = temp_label;
 		else if (is_pseudo(cleaned_line))
 		{
-			handle_pseudo(cleaned_line);
+			handle_pseudo(cleaned_line, fDmemin);
 		}
 		else // actual instruction
 			instruction_counter++;
@@ -78,10 +80,7 @@ int main(int argc, char* argv[])
 		switch (instType)
 		{
 		case REGULAR:
-			encode_instruction(&sInstruction, hex);
-			fwrite(hex, 1, strlen(hex), fImemin);
-			fwrite("\n", 1, strlen("\n"), fImemin);
-			fflush(fImemin);
+			encode_instruction(&sInstruction, fImemin);
 			break;
 		case PSEUDO:
 			break;
@@ -89,9 +88,14 @@ int main(int argc, char* argv[])
 			break;
 		}
 	}
+	fflush(fImemin);
 
 	for (int i = 0; i < INSTRUCTIONS_DEPTH; i++)
 		free(sLabelAddresses[i]);
+
+	fclose(fImemin);
+	fclose(fDmemin);
+	fclose(fProgram);
 
 	return 0;
 }

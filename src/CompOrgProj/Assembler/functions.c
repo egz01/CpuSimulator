@@ -1,59 +1,42 @@
 #include "functions.h"
 
-void copy_temp() {
-	FILE* dmemin = fopen("dmemin.txt", "w");
-	FILE* temp = fopen("temp.txt", "r");
-	char copy_data[10];
-	while (fgets(copy_data, 10, temp) != NULL)
-	{
-		fputs(copy_data, dmemin);
+void edit_memory(int address, int value, FILE* dmemin) {
+	char empty_cell[MEMORY_SIZE_IN_CHARS + 1] = "00000000";
+	char hex[MEMORY_SIZE_IN_CHARS + 1];
+	int line_counter = 0;
+	BOOL reached = 0;
 
+	sprintf(hex, "%X", value);
+	int to_pad = MEMORY_SIZE_IN_CHARS - strlen(hex);
+
+	if (to_pad)
+	{
+		memcpy(empty_cell + to_pad, hex, MEMORY_SIZE_IN_CHARS - to_pad + 1);
+		memcpy(hex, empty_cell, MEMORY_SIZE_IN_CHARS + 1);
+		memcpy(empty_cell, "00000000", MEMORY_SIZE_IN_CHARS);
 	}
-	fclose(temp);
-	fclose(dmemin);
-}
 
-void word(int address, long data, FILE* dmemin) {
-	int counter = -1;
-	char copy_data[10];
-	FILE* temp = fopen("temp.txt", "w");
-	while (fgets(copy_data, 10, dmemin) != NULL)
+	while (line_counter < MEMORY_DEPTH && !reached)
 	{
-		counter += 1;
-		if (counter == address)
+		if (line_counter == address)
 		{
-			fputs(data, temp);
-			fputs("\n", temp);
+			fwrite(hex, 1, strlen(hex), dmemin);
+			fwrite("\n", 1, strlen("\n"), dmemin);
+			reached = 1; // maybe skip this, and then output a 4096 memory cells long dmemin.txt
 		}
 		else
 		{
-			//printf("copydata:%s", copy_data);
-			fputs(copy_data, temp);
-			//fputs("\n" ,temp);
+			fwrite(empty_cell, 1, strlen(empty_cell), dmemin);
+			fwrite("\n", 1, strlen("\n"), dmemin);
 		}
+		line_counter++;
 	}
-	fclose(dmemin);
-	if (counter < address)
-	{
-		if (counter != -1) {
-			fputs("\n", temp);
-		}
-		counter += 1;
-		while (counter < address)
-		{
-			fputs("00000000\n", temp);
-			counter += 1;
-		}
-		fputs(data, temp);
-	}
-	fclose(temp);
-	copy_temp();
 }
 
 void handle_pseudo(const char* line, FILE* dmemin) {
 	char* field;
 	char* delim = " ";
-	Word instruction = { 256, 6 };
+	Word instruction;
 
 
 	// skip instruction (known to be .word at this point)
@@ -65,7 +48,7 @@ void handle_pseudo(const char* line, FILE* dmemin) {
 	field = strtok(NULL, delim);
 	instruction.value = get_numeric_value(field, NULL);
 
-	word(instruction.address, instruction.value, dmemin);
+	edit_memory(instruction.address, instruction.value, dmemin);
 }
 
 /// <summary>
@@ -235,10 +218,11 @@ char* parse_label(char* line, char* cleaned_line)
 /// <param name="input"> - Instruction struct to be encoded</param>
 /// <param name="output"> - encoded instruction</param>
 /// <returns>1 on success, 0 on failure</returns>
-int encode_instruction(Instruction* input, char output[]) {
+int encode_instruction(Instruction* input, FILE* imemin) {
 	INSTRUCTION num = 0;
 	int bit_index = INSTRUCTION_SIZE_IN_BITS;
-	char leading_zeros[13] = "000000000000";
+	char leading_zeros[INSTRUCTION_SIZE_IN_CHARS + 1] = "000000000000";
+	char hex[INSTRUCTION_SIZE_IN_CHARS + 1];
 	
 	bit_index -= OPCODE_BITS;
 	num |= ((INSTRUCTION)(input->opcode) << bit_index);
@@ -261,14 +245,17 @@ int encode_instruction(Instruction* input, char output[]) {
 	bit_index -= IMM2_BITS;
 	num |= (((INSTRUCTION)(input->immediate2) << bit_index) & ((INSTRUCTION)0xfff << bit_index)); // account for sign extension
 
-	sprintf(output, "%llX", num);
-	int to_pad = INSTRUCTION_SIZE_IN_CHARS - strlen(output);
+	sprintf(hex, "%llX", num);
+	int to_pad = INSTRUCTION_SIZE_IN_CHARS - strlen(hex);
 
 	if (to_pad)
 	{
-		memcpy(leading_zeros + to_pad, output, INSTRUCTION_SIZE_IN_CHARS - to_pad);
-		memcpy(output, leading_zeros, INSTRUCTION_SIZE_IN_CHARS);
+		memcpy(leading_zeros + to_pad, hex, INSTRUCTION_SIZE_IN_CHARS - to_pad);
+		memcpy(hex, leading_zeros, INSTRUCTION_SIZE_IN_CHARS);
 	}
+
+	fwrite(hex, 1, strlen(hex), imemin);
+	fwrite("\n", 1, strlen("\n"), imemin);
 
 	return 0;
 }

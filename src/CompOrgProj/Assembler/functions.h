@@ -11,11 +11,10 @@
 #include "structs.h"
 #include "definitions.h"
 
-void copy_temp();
-void word(int address, long data, FILE* dmemin);
+void edit_memory(int address, int value, FILE* dmemin);
 int read_line(FILE* input, char* line);
 LineType parse_line(char* line, Instruction* output, char* labels[INSTRUCTIONS_DEPTH]);
-int encode_instruction(Instruction* input, char output[]);
+int encode_instruction(Instruction* input, FILE* imemin);
 void remove_extra_spaces_and_tabs(const char* to_fix, char* fixed);
 OpCode get_op_code_from_string(const char* opcode);
 Register get_register_from_string(const char* field);
@@ -23,6 +22,7 @@ void string_to_lower(const char* input, char* output);
 int get_numeric_value(const char* field, char* labels[INSTRUCTIONS_DEPTH]);
 void parse_instruction(const char* line, Instruction* output, char* labels[INSTRUCTIONS_DEPTH]);
 char* parse_label(char* line, char* cleaned_line);
+void handle_pseudo(const char* line, FILE* dmemin);
 
 BOOL is_label(const char* line);
 BOOL is_pseudo(const char* line);
