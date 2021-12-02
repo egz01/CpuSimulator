@@ -1,5 +1,11 @@
 #include "functions.h"
 
+/// <summary>
+/// used to alter data to value in memory in given addres
+/// </summary>
+/// <param name="address"> - address to alter in memory</param>
+/// <param name="value"> - value to edit memory to</param>
+/// <param name="dmemin"> - output stream</param>
 void edit_memory(int address, int value, FILE* dmemin) {
 	char empty_cell[MEMORY_SIZE_IN_CHARS + 1] = "00000000";
 	char hex[MEMORY_SIZE_IN_CHARS + 1];
@@ -33,11 +39,15 @@ void edit_memory(int address, int value, FILE* dmemin) {
 	}
 }
 
+/// <summary>
+/// used to handle .word insturctions
+/// </summary>
+/// <param name="line"> - a stripped line containing a .word instruction</param>
+/// <param name="dmemin"> - stream open for writing</param>
 void handle_pseudo(const char* line, FILE* dmemin) {
 	char* field;
 	char* delim = " ";
 	Word instruction;
-
 
 	// skip instruction (known to be .word at this point)
 	field = strtok(line, delim);
@@ -291,10 +301,10 @@ int read_line(FILE* input, char* line)
 }
 
 /// <summary>
-/// 
+/// copies the data in input to output while altering every ascii char to lowercase
 /// </summary>
-/// <param name="input"></param>
-/// <param name="output"></param>
+/// <param name="input"> - any alphanumerical text</param>
+/// <param name="output"> - same text, every ascii in input will be lowercase</param>
 void string_to_lower(const char* input, char* output) {
 	char c;
 	int i = 0;
@@ -306,6 +316,11 @@ void string_to_lower(const char* input, char* output) {
 	output[i] = '\0';
 }
 
+/// <summary>
+/// return TRUE if given line is a label
+/// </summary>
+/// <param name="line"></param>
+/// <returns></returns>
 BOOL is_label(const char* line) {
 	int i = 0;
 	char c;
@@ -318,6 +333,11 @@ BOOL is_label(const char* line) {
 	return FALSE;
 }
 
+/// <summary>
+/// returns TRUE if given line is a pseudo instruction
+/// </summary>
+/// <param name="line"></param>
+/// <returns></returns>
 BOOL is_pseudo(const char* line) {
 	BOOL retval = 0;
 	while (line[0] != '\0' && !retval)
@@ -328,10 +348,20 @@ BOOL is_pseudo(const char* line) {
 	return retval;
 }
 
+/// <summary>
+/// returns TRUE if the whole line is a comment (no instruction)
+/// </summary>
+/// <param name="line"></param>
+/// <returns></returns>
 BOOL is_all_comment(const char* line) {
 	return (line[0] == '#');
 }
 
+/// <summary>
+/// returns an enum value according to string
+/// </summary>
+/// <param name="opcode"></param>
+/// <returns></returns>
 OpCode get_op_code_from_string(const char* opcode)
 {
 	string_to_lower(opcode, opcode);
@@ -402,6 +432,11 @@ OpCode get_op_code_from_string(const char* opcode)
 		return HALT;
 }
 
+/// <summary>
+/// returns an enum value according to string
+/// </summary>
+/// <param name="reg"></param>
+/// <returns></returns>
 Register get_register_from_string(const char* reg) {
 	string_to_lower(reg, reg);
 	if (strcmp(reg, "$zero") == 0)
@@ -453,6 +488,12 @@ Register get_register_from_string(const char* reg) {
 		return RA;
 }
 
+/// <summary>
+/// returns a numeric value inside field, using labels as a map to labels indices
+/// </summary>
+/// <param name="field"> - a stripped field containing either a hexadecimal number, a decimal number or a label</param>
+/// <param name="labels"> - labels map</param>
+/// <returns>a numeric value hidden in field</returns>
 int get_numeric_value(const char* field, char* labels[INSTRUCTIONS_DEPTH]) {
 	char temp[LINE_MAX_LENGTH_IN_BYTES];
 	char* ptr;

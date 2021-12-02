@@ -7,44 +7,6 @@
 
 int main(int argc, char* argv[])
 {
-//#define TEST
-#ifdef TEST
-	edit_memory(256, 7, NULL);
-
-
-	if (is_pseudo("     .test."))
-		printf("pseudo\n");
-	char output[LINE_MAX_LENGTH_IN_BYTES];
-	char* input = "\t      add     $t1, $t2,  $t3\t, 0, 0    ";
-	remove_extra_spaces_and_tabs(input, output);
-	printf("\"%s\" -> \"%s\"\n", input, output);
-
-	char* input2 = "TeSt+++12312";
-	char output2[LINE_MAX_LENGTH_IN_BYTES];
-	string_to_lower(input2, output2);
-	printf("\"%s\" -> \"%s\"\n", input2, output2);
-
-	const char* input3 = "0xABC";
-	int output3 = get_numeric_value(input3, NULL);
-	printf("\"%s\" -> %d\n", input3, output3);
-
-	const char* input4 = "0xFFFF";
-	int output4 = get_numeric_value(input4, NULL);
-	printf("\"%s\" -> %d\n", input4, output4);
-
-	const char* input5 = "1234";
-	int output5 = get_numeric_value(input5, NULL);
-	printf("\"%s\" -> %d\n", input5, output5);
-
-	char* c = "daniel";
-	char temp[500];
-	c += 3;
-	strncpy(temp, c, strlen(c));
-	temp[1] = '\0';
-	printf("%s", temp);
-	return 0;
-#endif
-
 	char line[LINE_MAX_LENGTH_IN_BYTES];
 	char cleaned_line[LINE_MAX_LENGTH_IN_BYTES];
 
@@ -90,6 +52,7 @@ int main(int argc, char* argv[])
 	}
 	fflush(fImemin);
 
+	// clean up dynamic memory
 	for (int i = 0; i < INSTRUCTIONS_DEPTH; i++)
 		free(sLabelAddresses[i]);
 
