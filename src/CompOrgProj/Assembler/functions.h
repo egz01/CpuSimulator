@@ -20,9 +20,9 @@ void remove_extra_spaces_and_tabs(const char* to_fix, char* fixed);
 OpCode get_op_code_from_string(const char* opcode);
 Register get_register_from_string(const char* field);
 void string_to_lower(const char* input, char* output);
-int get_numeric_value(const char* field, short* labels);
-void parse_instruction(const char* line, Instruction* output, short* labels);
-char* parse_label(char* line);
+int get_numeric_value(const char* field, char* labels[INSTRUCTIONS_DEPTH]);
+void parse_instruction(const char* line, Instruction* output, char* labels[INSTRUCTIONS_DEPTH]);
+char* parse_label(char* line, char* cleaned_line);
 
 BOOL is_label(const char* line);
 BOOL is_pseudo(const char* line);

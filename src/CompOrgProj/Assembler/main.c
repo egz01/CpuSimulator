@@ -7,8 +7,10 @@
 
 int main(int argc, char* argv[])
 {
-	//#define TEST
+//#define TEST
 #ifdef TEST
+	if (is_pseudo("     .test."))
+		printf("pseudo\n");
 	char output[LINE_MAX_LENGTH_IN_BYTES];
 	char* input = "\t      add     $t1, $t2,  $t3\t, 0, 0    ";
 	remove_extra_spaces_and_tabs(input, output);
@@ -41,6 +43,7 @@ int main(int argc, char* argv[])
 #endif
 
 	char line[LINE_MAX_LENGTH_IN_BYTES];
+	char cleaned_line[LINE_MAX_LENGTH_IN_BYTES];
 	char hex[INSTRUCTION_SIZE_IN_CHARS + 1];
 
 	Instruction sInstruction;
@@ -53,13 +56,17 @@ int main(int argc, char* argv[])
 	int line_length;
 	char* temp_label;
 	char* sLabelAddresses[4096] = {0};
-
+	
 	int i = 0;
 	while ((line_length = read_line(fProgram, line)) > 0) {
-		temp_label = parse_label(line);
+		temp_label = parse_label(line, cleaned_line);
 		if (temp_label) // this line is a label, doesn't count as instruction
 			sLabelAddresses[instruction_counter] = temp_label;
-		else
+		else if (is_pseudo(cleaned_line))
+		{
+			handle_pseudo(cleaned_line);
+		}
+		else // actual instruction
 			instruction_counter++;
 	}
 	

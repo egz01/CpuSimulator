@@ -13,6 +13,11 @@ typedef struct _Instruction {
 
 } Instruction;
 
+typedef struct _Word {
+	int address;
+	int value;
+} Word;
+
 typedef struct _Label {
 	char name[LABEL_MAX_LENGTH];
 	short address;

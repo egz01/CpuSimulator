@@ -50,6 +50,24 @@ void word(int address, long data, FILE* dmemin) {
 	copy_temp();
 }
 
+void handle_pseudo(const char* line, FILE* dmemin) {
+	char* field;
+	char* delim = " ";
+	Word instruction = { 256, 6 };
+
+
+	// skip instruction (known to be .word at this point)
+	field = strtok(line, delim);
+
+	field = strtok(NULL, delim);
+	instruction.address = get_numeric_value(field, NULL);
+
+	field = strtok(NULL, delim);
+	instruction.value = get_numeric_value(field, NULL);
+
+	word(instruction.address, instruction.value, dmemin);
+}
+
 /// <summary>
 /// fixes trailing, leading, inbetweening whitespaces and tabs in given string
 /// </summary>
@@ -130,11 +148,11 @@ LineType parse_line(char* line, Instruction* output, char* labels[INSTRUCTIONS_D
 	remove_extra_spaces_and_tabs(line, cleaned_line);
 	
 	if (is_label(cleaned_line)) {
-		// handle label, do nothing?
+		// do nothing
 		retval = LABEL;
 	}
 	else if (is_pseudo(cleaned_line)) {
-		// handle pseudo, call some function to alter dmemin.txt
+		// already handled
 		retval = PSEUDO;
 	}
 	else if (is_all_comment(cleaned_line)) {
@@ -150,7 +168,7 @@ LineType parse_line(char* line, Instruction* output, char* labels[INSTRUCTIONS_D
 }
 
 /// <summary>
-/// use this function toparse an instruction string into n instruction struct
+/// use this function to parse an instruction string into an instruction struct
 /// </summary>
 /// <param name="line"> - instruction string</param>
 /// <param name="output"> - instruction struct output</param>
@@ -189,10 +207,16 @@ void parse_instruction(const char* line, Instruction* output, char* labels[INSTR
 	output->immediate2 = get_numeric_value(field, labels);
 }
 
-char* parse_label(char* line)
+/// <summary>
+/// returns a malloced string - has to be freed!!!
+/// </summary>
+/// <param name="line">input raw line</param>
+/// <param name="cleaned_line">outputs a byproduct cleaned line, if necessary for pseudo instructions</param>
+/// <returns>pointer to new malloced string containing label string</returns>
+char* parse_label(char* line, char* cleaned_line)
 {
 	int label_length = 0;
-	char cleaned_line[LINE_MAX_LENGTH_IN_BYTES];
+	//char cleaned_line[LINE_MAX_LENGTH_IN_BYTES];
 	char* npLabel = NULL;
 	remove_extra_spaces_and_tabs(line, cleaned_line);
 	if (is_label(cleaned_line)) {
@@ -308,7 +332,13 @@ BOOL is_label(const char* line) {
 }
 
 BOOL is_pseudo(const char* line) {
-	return (line[0] == '.');
+	BOOL retval = 0;
+	while (line[0] != '\0' && !retval)
+	{
+		retval = line[0] == '.';
+		line++;
+	}
+	return retval;
 }
 
 BOOL is_all_comment(const char* line) {
@@ -445,7 +475,7 @@ int get_numeric_value(const char* field, char* labels[INSTRUCTIONS_DEPTH]) {
 	{
 		sscanf(temp+2, "%x", &retval);
 	}
-	else if ('a' < temp[0] && temp[0] < 'z') // label
+	else if ('a' < temp[0] && temp[0] < 'z' && labels) // label
 	{
 		int i = 0;
 		for (; i < INSTRUCTIONS_DEPTH; i++)
