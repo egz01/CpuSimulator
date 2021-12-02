@@ -1,60 +1,30 @@
 #ifndef _FUNCTIONS
 #define _FUNCTIONS
 
+#define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <ctype.h>
+#include <stdlib.h>
+#include <math.h>
+#include "structs.h"
+#include "definitions.h"
 
-void copy_temp() {
-	FILE* dmemin = fopen("dmemin.txt", "w");
-	FILE* temp = fopen("temp.txt", "r");
-	char copy_data[10];
-	while (fgets(copy_data, 10, temp) != NULL)
-	{
-		fputs(copy_data, dmemin);
+void edit_memory(int address, int value, FILE* dmemin);
+int read_line(FILE* input, char* line);
+LineType parse_line(char* line, Instruction* output, char* labels[INSTRUCTIONS_DEPTH]);
+int encode_instruction(Instruction* input, FILE* imemin);
+void remove_extra_spaces_and_tabs(const char* to_fix, char* fixed);
+OpCode get_op_code_from_string(const char* opcode);
+Register get_register_from_string(const char* field);
+void string_to_lower(const char* input, char* output);
+int get_numeric_value(const char* field, char* labels[INSTRUCTIONS_DEPTH]);
+void parse_instruction(const char* line, Instruction* output, char* labels[INSTRUCTIONS_DEPTH]);
+char* parse_label(char* line, char* cleaned_line);
+void handle_pseudo(const char* line, FILE* dmemin);
 
-	}
-	fclose(temp);
-	fclose(dmemin);
-}
-
-void word(int address, char data[8]) {
-	int counter = -1;
-	char copy_data[10];
-	FILE* dmemin = fopen("dmemin.txt", "r");
-	FILE* temp = fopen("temp.txt", "w");
-	while (fgets(copy_data, 10, dmemin) != NULL)
-	{
-		counter += 1;
-		if (counter == address)
-		{
-			fputs(data, temp);
-			fputs("\n", temp);
-		}
-		else
-		{
-			//printf("copydata:%s", copy_data);
-			fputs(copy_data, temp);
-			//fputs("\n" ,temp);
-		}
-	}
-	fclose(dmemin);
-	if (counter < address)
-	{
-		if (counter != -1) {
-			fputs("\n", temp);
-		}
-		counter += 1;
-		while (counter < address)
-		{
-			fputs("00000000\n", temp);
-			counter += 1;
-		}
-		fputs(data, temp);
-	}
-	fclose(temp);
-	copy_temp();
-}
-
-
+BOOL is_label(const char* line);
+BOOL is_pseudo(const char* line);
+BOOL is_all_comment(const char* line);
 #endif

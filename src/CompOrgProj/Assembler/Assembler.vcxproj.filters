@@ -2,6 +2,9 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="..\..\..\io_files\program.asm">
+      <Filter>Resources</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source Files">
@@ -10,15 +13,15 @@
     <Filter Include="Header Files">
       <UniqueIdentifier>{41da5869-216f-4394-baa1-48fa52752bdf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resources">
+      <UniqueIdentifier>{de4b0a04-c33f-41e9-9b2c-706ee87b2c7f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Instruction_Struct.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="word_pseudo.c">
+    <ClCompile Include="functions.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -29,5 +32,16 @@
     <ClInclude Include="structs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="definitions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\..\..\io_files\dmemin.txt">
+      <Filter>Resources</Filter>
+    </Text>
+    <Text Include="..\..\..\io_files\imemin.txt">
+      <Filter>Resources</Filter>
+    </Text>
   </ItemGroup>
 </Project>
