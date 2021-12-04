@@ -80,6 +80,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <ExternalIncludePath>C:\Users\eviat\Documents\university\Semester 5\Computer Organization\source\CompOrgProj\src\CompOrgProj\include;$(ExternalIncludePath)</ExternalIncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -149,13 +151,13 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="definitions.h" />
-    <ClInclude Include="functions.h" />
-    <ClInclude Include="structs.h" />
-  </ItemGroup>
-  <ItemGroup>
     <Text Include="..\..\..\io_files\dmemin.txt" />
     <Text Include="..\..\..\io_files\imemin.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\include\definitions.h" />
+    <ClInclude Include="..\include\structs.h" />
+    <ClInclude Include="functions.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

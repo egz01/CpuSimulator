@@ -20,6 +20,8 @@
 #define MEMORY_SIZE_IN_BITS 32
 #define MEMORY_SIZE_IN_CHARS 8
 
+#define NUM_REGISTERS 16
+
 // instruction structure
 #define OPCODE_BITS 8
 #define	RD_BITS 4

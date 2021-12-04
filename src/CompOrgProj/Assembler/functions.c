@@ -261,10 +261,11 @@ int encode_instruction(Instruction* input, FILE* imemin) {
 	if (to_pad)
 	{
 		memcpy(leading_zeros + to_pad, hex, INSTRUCTION_SIZE_IN_CHARS - to_pad);
-		memcpy(hex, leading_zeros, INSTRUCTION_SIZE_IN_CHARS);
+		fwrite(leading_zeros, 1, INSTRUCTION_SIZE_IN_CHARS, imemin);
 	}
+	else
+		fwrite(hex, 1, INSTRUCTION_SIZE_IN_CHARS, imemin);
 
-	fwrite(hex, 1, strlen(hex), imemin);
 	fwrite("\n", 1, strlen("\n"), imemin);
 
 	return 0;

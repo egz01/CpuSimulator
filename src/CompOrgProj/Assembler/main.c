@@ -1,9 +1,9 @@
 // Assembler's main function - entry point of the program
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
+#include <structs.h>
+#include <definitions.h>
 #include "functions.h"
-#include "structs.h"
-#include "definitions.h"
 
 int main(int argc, char* argv[])
 {
