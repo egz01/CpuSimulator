@@ -5,8 +5,7 @@
 	jal $ra, $zero, $zero, $imm2, 0, fib		# calc $v0 = fib(x)
 	sw $zero, $zero, $imm2, $v0, 0, 65		# store fib(x) in 65
 	halt $zero, $zero, $zero, $zero, 0, 0		# halt
-fib:
-	add $sp, $sp, $imm2, $zero, 0, -3		# adjust stack for 3 items
+fib: add $sp, $sp, $imm2, $zero, 0, -3		# adjust stack for 3 items
 	sw $zero, $sp, $imm2, $s0, 0, 2			# save $s0
 	sw $zero, $sp, $imm2, $ra, 0, 1			# save return address
 	sw $zero, $sp, $imm2, $a0, 0, 0			# save argument
