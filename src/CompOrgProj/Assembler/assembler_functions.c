@@ -1,4 +1,4 @@
-#include "functions.h"
+#include "assembler_functions.h"
 
 /// <summary>
 /// used to alter data to value in memory in given addres
@@ -142,7 +142,13 @@ LineType parse_line(char* line, Instruction* output, char* labels[INSTRUCTIONS_D
 	
 	if (is_label(cleaned_line)) {
 		// do nothing
-		retval = LABEL;
+		// check if inline label:
+		strtok(cleaned_line, ":");
+		char* maybe_inst = strtok(NULL, ":");
+		if (maybe_inst)
+			retval = parse_line(maybe_inst, output, cleaned_line, labels);
+		else
+			retval = LABEL;
 	}
 	else if (is_pseudo(cleaned_line)) {
 		// already handled
@@ -206,18 +212,25 @@ void parse_instruction(const char* line, Instruction* output, char* labels[INSTR
 /// <param name="line">input raw line</param>
 /// <param name="cleaned_line">outputs a byproduct cleaned line, if necessary for pseudo instructions</param>
 /// <returns>pointer to new malloced string containing label string</returns>
-char* parse_label(char* line, char* cleaned_line)
+char* parse_label(char* line, char* cleaned_line, BOOL* inline_label)
 {
 	int label_length = 0;
 	//char cleaned_line[LINE_MAX_LENGTH_IN_BYTES];
 	char* npLabel = NULL;
 	remove_extra_spaces_and_tabs(line, cleaned_line);
 	if (is_label(cleaned_line)) {
-		label_length = strlen(cleaned_line) - 1;
+		char* p = strtok(cleaned_line, ":");
+		label_length = strlen(p);
 		npLabel = malloc((label_length+1) * sizeof(char));
-		strncpy(npLabel, cleaned_line, label_length);
-		npLabel[label_length] = '\0';
+		strncpy(npLabel, p, label_length+1);
 		string_to_lower(npLabel, npLabel);
+
+		p = strtok(NULL, ":");
+		if (p) { // have something after label
+			remove_extra_spaces_and_tabs(p, cleaned_line);
+			if (!is_all_comment(cleaned_line))
+				*inline_label = TRUE;
+		}
 	}
 	return npLabel;
 }
@@ -261,10 +274,11 @@ int encode_instruction(Instruction* input, FILE* imemin) {
 	if (to_pad)
 	{
 		memcpy(leading_zeros + to_pad, hex, INSTRUCTION_SIZE_IN_CHARS - to_pad);
-		memcpy(hex, leading_zeros, INSTRUCTION_SIZE_IN_CHARS);
+		fwrite(leading_zeros, 1, INSTRUCTION_SIZE_IN_CHARS, imemin);
 	}
+	else
+		fwrite(hex, 1, INSTRUCTION_SIZE_IN_CHARS, imemin);
 
-	fwrite(hex, 1, strlen(hex), imemin);
 	fwrite("\n", 1, strlen("\n"), imemin);
 
 	return 0;
@@ -322,15 +336,17 @@ void string_to_lower(const char* input, char* output) {
 /// <param name="line"></param>
 /// <returns></returns>
 BOOL is_label(const char* line) {
-	int i = 0;
+	BOOL retval = 0;
 	char c;
-	while ((c = line[i]) != '\0')
+	while ((c = line[0]) != '\0' && !retval)
 	{
-		if (c == ':')
-			return TRUE;
-		i++;
+		if (c == '#')
+			break;
+
+		retval = c == ':';
+		line++;
 	}
-	return FALSE;
+	return retval;
 }
 
 /// <summary>
@@ -340,9 +356,13 @@ BOOL is_label(const char* line) {
 /// <returns></returns>
 BOOL is_pseudo(const char* line) {
 	BOOL retval = 0;
-	while (line[0] != '\0' && !retval)
+	char c;
+	while ((c = line[0]) != '\0' && !retval)
 	{
-		retval = line[0] == '.';
+		if (c == '#')
+			break;
+
+		retval = c == '.';
 		line++;
 	}
 	return retval;
