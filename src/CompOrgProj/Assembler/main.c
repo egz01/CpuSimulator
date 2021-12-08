@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <structs.h>
 #include <definitions.h>
-#include "functions.h"
+#include "assembler_functions.h"
 
 int main(int argc, char* argv[])
 {
@@ -23,9 +23,12 @@ int main(int argc, char* argv[])
 	
 	int i = 0;
 	while ((line_length = read_line(fProgram, line)) > 0) {
-		temp_label = parse_label(line, cleaned_line);
-		if (temp_label) // this line is a label, doesn't count as instruction
+		BOOL inline_label = 0;
+		temp_label = parse_label(line, cleaned_line, &inline_label);
+		if (temp_label) { // this line is a label, doesn't count as instruction
 			sLabelAddresses[instruction_counter] = temp_label;
+			instruction_counter += (int)inline_label;
+		}
 		else if (is_pseudo(cleaned_line))
 		{
 			handle_pseudo(cleaned_line, fDmemin);

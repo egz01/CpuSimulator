@@ -21,7 +21,7 @@
     <ClCompile Include="main.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="functions.c">
+    <ClCompile Include="assembler_functions.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -40,7 +40,7 @@
     <ClInclude Include="..\include\structs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="functions.h">
+    <ClInclude Include="assembler_functions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

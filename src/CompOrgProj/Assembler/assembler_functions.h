@@ -21,7 +21,7 @@ Register get_register_from_string(const char* field);
 void string_to_lower(const char* input, char* output);
 int get_numeric_value(const char* field, char* labels[INSTRUCTIONS_DEPTH]);
 void parse_instruction(const char* line, Instruction* output, char* labels[INSTRUCTIONS_DEPTH]);
-char* parse_label(char* line, char* cleaned_line);
+char* parse_label(char* line, char* cleaned_line, BOOL* inline_label);
 void handle_pseudo(const char* line, FILE* dmemin);
 
 BOOL is_label(const char* line);

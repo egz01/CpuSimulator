@@ -2,27 +2,10 @@
 #define _STRUCTS
 #include "definitions.h"
 
-typedef struct _Instruction {
-	enum OpCode opcode;
-	int rd;
-	int rs;
-	int rt;
-	int rm;
-	int immediate1;
-	int immediate2;
-
-} Instruction;
-
 typedef struct _Word {
 	int address;
 	int value;
 } Word;
-
-typedef struct _Label {
-	char name[LABEL_MAX_LENGTH];
-	short address;
-	struct Label* next;
-} Label;
 
 typedef enum _OpCode {
 	ADD = 0,
@@ -49,6 +32,17 @@ typedef enum _OpCode {
 	HALT,
 } OpCode;
 
+typedef struct _Instruction {
+	enum OpCode opcode;
+	int rd;
+	int rs;
+	int rt;
+	int rm;
+	int immediate1;
+	int immediate2;
+
+} Instruction;
+
 typedef enum _LineType {
 	REGULAR,
 	PSEUDO,
@@ -74,5 +68,30 @@ typedef enum _Register {
 	SP,
 	RA,
 } Register;
+
+typedef enum _IOHWRegister { 
+	IRQ0ENABLE = 0,
+	IRQ1ENABLE,
+	IRQ2ENABLE,
+	IRQ0STATUS,
+	IRQ1STATUS,
+	IRQ2STATUS,
+	IRQHANDLER,
+	IRQRETURN,
+	CLKS,
+	LEDS,
+	DISPLAY7SEG,
+	TIMERENABLE,
+	TIMERCURRENT,
+	TIMERMAX,
+	DISKCMD,
+	DISKSECTOR,
+	DISKBUFFER,
+	DISKSTATUS,
+	RESERVED1,
+	RESERVED2,
+	MONITORDATA,
+	MONITORCMD
+} IOHWRegister;
 
 #endif

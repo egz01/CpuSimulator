@@ -1,4 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LocalDebuggerCommandArguments>"$(SolutionDir)..\..\io_files\imemin.txt" "$(SolutionDir)..\..\io_files\dmemin.txt" "$(SolutionDir)..\..\io_files\diskin.txt" "$(SolutionDir)..\..\io_files\irq2in.txt" "$(SolutionDir)..\..\io_files\dmemout.txt" "$(SolutionDir)..\..\io_files\regout.txt" "$(SolutionDir)..\..\io_files\tract.txt" "$(SolutionDir)..\..\io_files\hwregtrace.txt" "$(SolutionDir)..\..\io_files\cycles.txt" "$(SolutionDir)..\..\io_files\leds.txt" "$(SolutionDir)..\..\io_files\display7seg.txt" "$(SolutionDir)..\..\io_files\diskout.txt" "$(SolutionDir)..\..\io_files\monitor.txt" "$(SolutionDir)..\..\io_files\monitor.yuv"</LocalDebuggerCommandArguments>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+  </PropertyGroup>
 </Project>
