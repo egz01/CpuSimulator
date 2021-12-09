@@ -10,45 +10,45 @@ int main(int argc, char* argv[])
     // BOOT 
     
     // open input files
-    FILE* imemin = open(argv[1], "r");
-    FILE* dmemin = open(argv[2], "r");
-    FILE* diskin = open(argv[3], "r");
-    FILE* irq2in = open(argv[4], "r");
+    FILE* imemin = fopen(argv[1], "r");
+    FILE* dmemin = fopen(argv[2], "r");
+    FILE* diskin = fopen(argv[3], "r");
+    FILE* irq2in = fopen(argv[4], "r");
 
     // open output files
-    FILE* dmemout     = open(argv[5], "w");
-    FILE* regout      = open(argv[6], "w");
-    FILE* trace       = open(argv[7], "w");
-    FILE* hwregtrace  = open(argv[8], "w");
-    FILE* cycles      = open(argv[9], "w");
-    FILE* leds        = open(argv[10], "w");
-    FILE* display7seg = open(argv[11], "w");
-    FILE* diskout     = open(argv[12], "w");
-    FILE* monitor     = open(argv[13], "w");
-    FILE* monitor_yuv = open(argv[14], "w");
+    FILE* dmemout     = fopen(argv[5], "w");
+    FILE* regout      = fopen(argv[6], "w");
+    FILE* trace       = fopen(argv[7], "w");
+    FILE* hwregtrace  = fopen(argv[8], "w");
+    FILE* cycles      = fopen(argv[9], "w");
+    FILE* leds        = fopen(argv[10], "w");
+    FILE* display7seg = fopen(argv[11], "w");
+    FILE* diskout     = fopen(argv[12], "w");
+    FILE* monitor     = fopen(argv[13], "w");
+    FILE* monitor_yuv = fopen(argv[14], "w");
 
     int registers[NUM_REGISTERS] = { 0 };
     int HWregisters[NUM_IOREGISTERS] = { 0 };
     unsigned short PC = 0;
-    INSTRUCTION* instructions_memory = (INSTRUCTION*)malloc(sizeof(INSTRUCTION) * INSTRUCTIONS_DEPTH);
-    INSTRUCTION* data_memory = (unsigned int*)malloc(sizeof(unsigned int) * MEMORY_DEPTH);
+    INSTRUCTION_TYPE* instructions_memory = (INSTRUCTION_TYPE*)malloc(sizeof(INSTRUCTION_TYPE) * INSTRUCTIONS_DEPTH);
+    DATA_TYPE* data_memory = (DATA_TYPE*)malloc(sizeof(DATA_TYPE) * MEMORY_DEPTH);
     
     Instruction current;
 
     BOOL halt = FALSE;
     int cycles_counter = 0;
 
-    for (int i = 0; i++; i < INSTRUCTIONS_DEPTH)
-    {
-        // instructions_memory[i] = parse line from imemin.txt
-        //data_memory[i] = parse line from dmemin.txt
-    }
+    load_instruction_bytes(imemin, instructions_memory);
+    load_data_bytes(dmemin, data_memory);
 
-    parse_instruction(0x140021001002, &current);
-
-    /*
-    while (!halt)
+    while (!halt && PC < INSTRUCTIONS_DEPTH)
     {
+        // fetch and decode:
+        parse_instruction(instructions_memory[PC++], &current);
+
+        // execute:
+
+        /*
         if (cycles_counter in irq2list):
             enable irq2
 
@@ -61,9 +61,9 @@ int main(int argc, char* argv[])
         if (irq && not_in_interrupt())
         {
             
-;       }
+        }
+        */
     }
-    */
 
     fclose(imemin);
     fclose(dmemin);

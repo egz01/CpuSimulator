@@ -242,31 +242,31 @@ char* parse_label(char* line, char* cleaned_line, BOOL* inline_label)
 /// <param name="output"> - encoded instruction</param>
 /// <returns>1 on success, 0 on failure</returns>
 int encode_instruction(Instruction* input, FILE* imemin) {
-	INSTRUCTION num = 0;
+	INSTRUCTION_TYPE num = 0;
 	int bit_index = INSTRUCTION_SIZE_IN_BITS;
 	char leading_zeros[INSTRUCTION_SIZE_IN_CHARS + 1] = "000000000000";
 	char hex[INSTRUCTION_SIZE_IN_CHARS + 1];
 	
 	bit_index -= OPCODE_BITS;
-	num |= ((INSTRUCTION)(input->opcode) << bit_index);
+	num |= ((INSTRUCTION_TYPE)(input->opcode) << bit_index);
 	
 	bit_index -= RD_BITS;
-	num |= ((INSTRUCTION)(input->rd) << bit_index);
+	num |= ((INSTRUCTION_TYPE)(input->rd) << bit_index);
 
 	bit_index -= RS_BITS;
-	num |= ((INSTRUCTION)(input->rs) << bit_index);
+	num |= ((INSTRUCTION_TYPE)(input->rs) << bit_index);
 	
 	bit_index -= RT_BITS;
-	num |= ((INSTRUCTION)(input->rt) << bit_index);
+	num |= ((INSTRUCTION_TYPE)(input->rt) << bit_index);
 
 	bit_index -= RM_BITS;
-	num |= ((INSTRUCTION)(input->rm) << bit_index);
+	num |= ((INSTRUCTION_TYPE)(input->rm) << bit_index);
 
 	bit_index -= IMM1_BITS;
-	num |= (((INSTRUCTION)(input->immediate1) << bit_index) & ((INSTRUCTION)0xfff << bit_index)); // account for sign extension
+	num |= (((INSTRUCTION_TYPE)(input->immediate1) << bit_index) & ((INSTRUCTION_TYPE)0xfff << bit_index)); // account for sign extension
 	
 	bit_index -= IMM2_BITS;
-	num |= (((INSTRUCTION)(input->immediate2) << bit_index) & ((INSTRUCTION)0xfff << bit_index)); // account for sign extension
+	num |= (((INSTRUCTION_TYPE)(input->immediate2) << bit_index) & ((INSTRUCTION_TYPE)0xfff << bit_index)); // account for sign extension
 
 	sprintf(hex, "%llX", num);
 	int to_pad = INSTRUCTION_SIZE_IN_CHARS - strlen(hex);
