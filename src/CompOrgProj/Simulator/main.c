@@ -29,16 +29,25 @@ int main(int argc, char* argv[])
 
     int registers[NUM_REGISTERS] = { 0 };
     int HWregisters[NUM_IOREGISTERS] = { 0 };
-    unsigned short PC;
+    unsigned short PC = 0;
+    INSTRUCTION* instructions_memory = (INSTRUCTION*)malloc(sizeof(INSTRUCTION) * INSTRUCTIONS_DEPTH);
+    INSTRUCTION* data_memory = (unsigned int*)malloc(sizeof(unsigned int) * MEMORY_DEPTH);
+    
     Instruction current;
 
     BOOL halt = FALSE;
     int cycles_counter = 0;
 
+    for (int i = 0; i++; i < INSTRUCTIONS_DEPTH)
+    {
+        // instructions_memory[i] = parse line from imemin.txt
+        //data_memory[i] = parse line from dmemin.txt
+    }
+
     parse_instruction(0x140021001002, &current);
 
     /*
-    while (!halt) // main operation
+    while (!halt)
     {
         if (cycles_counter in irq2list):
             enable irq2
