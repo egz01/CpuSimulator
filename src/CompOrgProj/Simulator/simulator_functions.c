@@ -105,8 +105,7 @@ int read_line(FILE* input, char* line)
 /// <param name="halt">(out) indicates whether instructed to halt program</param>
 void execute(Instruction* inst, unsigned short* PC, int* registers, int* IOregisters, DATA_TYPE* memory, BOOL* halt)
 {
-	int temp = 0;
-	DATA_TYPE xor = 0;
+	unsigned int temp = 0;
 	registers[ZERO] = 0;
 	registers[IMM1] = inst->immediate1;
 	registers[IMM2] = inst->immediate2;
@@ -142,20 +141,13 @@ void execute(Instruction* inst, unsigned short* PC, int* registers, int* IOregis
 			break;
 
 		case (SRA):
-			temp = registers[inst->rs];
-			xor = 0x01;
-			while (temp != 0)
-			{
-				temp >>= 1;
-				xor ^= (xor<<1);
-			}
-
-			registers[inst->rd] = (registers[inst->rs] >> registers[inst->rt]) ^ (1);
-
+			registers[inst->rd] = registers[inst->rs] >> registers[inst->rt];
 			break;
 
 		case (SRL):
-			registers[inst->rd] = registers[inst->rs] >> registers[inst->rt];
+			temp = (unsigned)registers[inst->rs];
+			temp >>= registers[inst->rt];
+			registers[inst->rd] = (signed)temp;
 			break;
 
 		case (BEQ):
