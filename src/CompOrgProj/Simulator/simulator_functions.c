@@ -93,3 +93,110 @@ int read_line(FILE* input, char* line)
 	line[i] = '\0';
 	return i;
 }
+void execute(Instruction* inst, unsigned short* PC, int* registers, int* IOregisters, DATA_TYPE* memory, BOOL* halt)
+{
+	int xor = 0;
+	registers[ZERO] = 0;
+	registers[IMM1] = inst->immediate1;
+	registers[IMM2] = inst->immediate2;
+
+	switch (inst->opcode)
+	{
+		case (ADD):
+			registers[inst->rd] = registers[inst->rs] + registers[inst->rt] + registers[inst->rm];
+			break;
+
+		case (SUB):
+			registers[inst->rd] = registers[inst->rs] - registers[inst->rt] - registers[inst->rm];
+			break;
+
+		case (MAC):
+			registers[inst->rd] = registers[inst->rs] * registers[inst->rt] + registers[inst->rm];
+			break;
+
+		case (AND):
+			registers[inst->rd] = registers[inst->rs] & registers[inst->rt] & registers[inst->rm];
+			break;
+
+		case (OR):
+			registers[inst->rd] = registers[inst->rs] | registers[inst->rt] | registers[inst->rm];
+			break;
+
+		case (XOR):
+			registers[inst->rd] = registers[inst->rs] ^ registers[inst->rt] ^ registers[inst->rm];
+			break;
+
+		case (SLL):
+			registers[inst->rd] = registers[inst->rs] >> registers[inst->rt];
+			break;
+
+		case (SRA):
+			if (registers[inst->rs] & 0x800)
+				xor = 0xffffffff;
+			registers[inst->rd] = registers[inst->rs] >> registers[inst->rt] ^ xor;
+			break;
+
+		case (SRL):
+			registers[inst->rd] = registers[inst->rs] >> registers[inst->rt];
+			break;
+
+		case (BEQ):
+			if (registers[inst->rs] == registers[inst->rt])
+				*PC = (registers[inst->rm] & 0xfff);
+			break;
+
+		case (BNE):
+			if (registers[inst->rs] != registers[inst->rt])
+				*PC = (registers[inst->rm] & 0xfff);
+			break;
+
+		case (BLT):
+			if (registers[inst->rs] < registers[inst->rt])
+				*PC = (registers[inst->rm] & 0xfff);
+			break;
+
+		case (BGT):
+			if (registers[inst->rs] > registers[inst->rt])
+				*PC = (registers[inst->rm] & 0xfff);
+			break;
+
+		case (BLE):
+			if (registers[inst->rs] <= registers[inst->rt])
+				*PC = (registers[inst->rm] & 0xfff);
+			break;
+
+		case (BGE):
+			if (registers[inst->rs] >= registers[inst->rt])
+				*PC = (registers[inst->rm] & 0xfff);
+			break;
+
+		case (JAL):
+			registers[inst->rd] = *PC + 1;
+			*PC = registers[inst->rm] & 0xfff;
+			break;
+
+		case (LW):
+			registers[inst->rd] = memory[registers[inst->rs] + registers[inst->rt]] + registers[inst->rm];
+			break;
+
+		case (SW):
+			memory[registers[inst->rs] + registers[inst->rt]] = registers[inst->rm] + registers[inst->rd];
+			break;
+
+		case (RETI):
+			*PC = IOregisters[IRQRETURN];
+			break;
+
+		case (IN):
+			registers[inst->rd] = IOregisters[registers[inst->rs] + registers[inst->rt]];
+			break;
+
+		case (OUT):
+			IOregisters[registers[inst->rs] + registers[inst->rt]] = registers[inst->rm];
+			break;
+
+		case (HALT):
+			*halt = 1;
+			break;
+	}
+}

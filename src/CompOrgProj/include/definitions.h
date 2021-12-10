@@ -2,7 +2,7 @@
 #define _DEFINITIONS
 
 // type definitions for readable code
-#define BOOL char
+#define BOOL int
 #define TRUE 1
 #define FALSE 0
 #define INSTRUCTION_TYPE long long
@@ -23,6 +23,9 @@
 
 #define NUM_REGISTERS 16
 #define NUM_IOREGISTERS 23
+
+#define SCREEN_X 256
+#define SCREEN_Y 256
 
 // instruction structure
 #define OPCODE_BITS 8

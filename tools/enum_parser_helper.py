@@ -4,6 +4,10 @@ def generate_if(code, iselse, varname):
     s = "{_else} if (strcmp({v},\"{c}\") == 0)\n\treturn {C};".format(v=varname, _else='else' if iselse else "", c=code.lower(), C=code.upper())
     return s
     
+def generate_case(code):
+    s = "case ({c}):".format(c=code)
+    return s
+    
 opcodes = ["ADD",
 	"SUB",
 	"MAC",
@@ -59,5 +63,12 @@ with open('temp2.txt', 'w') as f:
         f.write(generate_if(reg, iselse, 'reg'))
         f.write('\r\n')
         iselse = True
-        
+
 os.popen("notepad temp2.txt")
+        
+with open('temp3.txt', 'w') as f:
+    for code in opcodes:
+        f.write(generate_case(code))
+        f.write('\r\n')    
+        
+os.popen("notepad temp3.txt")

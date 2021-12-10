@@ -40,7 +40,6 @@ typedef struct _Instruction {
 	int rm;
 	int immediate1;
 	int immediate2;
-
 } Instruction;
 
 typedef enum _LineType {
