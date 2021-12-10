@@ -5,8 +5,8 @@
 #define BOOL int
 #define TRUE 1
 #define FALSE 0
-#define INSTRUCTION_TYPE long long
-#define DATA_TYPE int
+#define INSTRUCTION_TYPE unsigned long long int
+#define DATA_TYPE unsigned int
 
 // physical limitations constants
 #define INSTRUCTIONS_DEPTH 4096

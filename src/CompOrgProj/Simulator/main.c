@@ -36,8 +36,8 @@ int main(int argc, char* argv[])
         arr[i] = (int*)calloc(SCREEN_X, sizeof(DATA_TYPE));
 
     Instruction current;
-    int registers[NUM_REGISTERS] = { 0 };
-    int IOregisters[NUM_IOREGISTERS] = { 0 };
+    DATA_TYPE registers[NUM_REGISTERS] = { 0 };
+    DATA_TYPE IOregisters[NUM_IOREGISTERS] = { 0 };
     unsigned short PC = 0;
     BOOL halt = FALSE;
     unsigned long long int cycles_counter = 0;
@@ -47,8 +47,10 @@ int main(int argc, char* argv[])
 
     while (!halt && PC < INSTRUCTIONS_DEPTH)
     {
+        printf("executing instruction: %d\r\n", PC);
+
         // fetch and decode:
-        parse_instruction(instructions_memory[PC], &current);
+        parse_instruction(instructions_memory[PC++], &current);
         
         execute(&current, &PC, registers, IOregisters, data_memory, &halt);
 
@@ -76,8 +78,6 @@ int main(int argc, char* argv[])
         // 
         if (current.opcode == OUT || current.opcode == IN);
             // TODO: update hwregtrace.txt (only if out or in!)
-
-
         cycles_counter++;
     }
 

@@ -93,9 +93,20 @@ int read_line(FILE* input, char* line)
 	line[i] = '\0';
 	return i;
 }
+
+/// <summary>
+/// preforms execution of given instruction
+/// </summary>
+/// <param name="inst">pointer to instruction to execute</param>
+/// <param name="PC">(out) indicates index of next instruction</param>
+/// <param name="registers">registers access</param>
+/// <param name="IOregisters">IO access</param>
+/// <param name="memory">ram access</param>
+/// <param name="halt">(out) indicates whether instructed to halt program</param>
 void execute(Instruction* inst, unsigned short* PC, int* registers, int* IOregisters, DATA_TYPE* memory, BOOL* halt)
 {
-	int xor = 0;
+	int temp = 0;
+	DATA_TYPE xor = 0;
 	registers[ZERO] = 0;
 	registers[IMM1] = inst->immediate1;
 	registers[IMM2] = inst->immediate2;
@@ -131,9 +142,16 @@ void execute(Instruction* inst, unsigned short* PC, int* registers, int* IOregis
 			break;
 
 		case (SRA):
-			if (registers[inst->rs] & 0x800)
-				xor = 0xffffffff;
-			registers[inst->rd] = registers[inst->rs] >> registers[inst->rt] ^ xor;
+			temp = registers[inst->rs];
+			xor = 0x01;
+			while (temp != 0)
+			{
+				temp >>= 1;
+				xor ^= (xor<<1);
+			}
+
+			registers[inst->rd] = (registers[inst->rs] >> registers[inst->rt]) ^ (1);
+
 			break;
 
 		case (SRL):
@@ -171,7 +189,7 @@ void execute(Instruction* inst, unsigned short* PC, int* registers, int* IOregis
 			break;
 
 		case (JAL):
-			registers[inst->rd] = *PC + 1;
+			registers[inst->rd] = *PC;
 			*PC = registers[inst->rm] & 0xfff;
 			break;
 
