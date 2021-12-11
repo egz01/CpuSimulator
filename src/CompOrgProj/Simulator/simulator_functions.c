@@ -122,41 +122,49 @@ void execute(Instruction* inst, unsigned short* PC, int* registers, int* IOregis
 		case (ADD):
 			value = registers[inst->rs] + registers[inst->rt] + registers[inst->rm];
 			update_rd(inst->rd, value, registers);
+			(*PC)++;
 			break;
 
 		case (SUB):
 			value = registers[inst->rs] - registers[inst->rt] - registers[inst->rm];
 			update_rd(inst->rd, value, registers);
+			(*PC)++;
 			break;
 
 		case (MAC):
 			value = registers[inst->rs] * registers[inst->rt] + registers[inst->rm];
 			update_rd(inst->rd, value, registers);
+			(*PC)++;
 			break;
 
 		case (AND):
 			value = registers[inst->rs] & registers[inst->rt] & registers[inst->rm];
 			update_rd(inst->rd, value, registers);
+			(*PC)++;
 			break;
 
 		case (OR):
 			value = registers[inst->rs] | registers[inst->rt] | registers[inst->rm];
 			update_rd(inst->rd, value, registers);
+			(*PC)++;
 			break;
 
 		case (XOR):
 			value = registers[inst->rs] ^ registers[inst->rt] ^ registers[inst->rm];
 			update_rd(inst->rd, value, registers);
+			(*PC)++;
 			break;
 
 		case (SLL):
 			value = registers[inst->rs] >> registers[inst->rt];
 			update_rd(inst->rd, value, registers);
+			(*PC)++;
 			break;
 
 		case (SRA):
 			value = registers[inst->rs] >> registers[inst->rt];
 			update_rd(inst->rd, value, registers);
+			(*PC)++;
 			break;
 
 		case (SRL):
@@ -164,40 +172,47 @@ void execute(Instruction* inst, unsigned short* PC, int* registers, int* IOregis
 			temp >>= registers[inst->rt];
 			registers[inst->rd] = (signed)temp;
 			update_rd(inst->rd, value, registers);
+			(*PC)++;
 			break;
 
 		case (BEQ):
 			if (registers[inst->rs] == registers[inst->rt])
 				*PC = (registers[inst->rm] & 0xfff);
+			else (*PC)++;
 			break;
 
 		case (BNE):
 			if (registers[inst->rs] != registers[inst->rt])
 				*PC = (registers[inst->rm] & 0xfff);
+			else (*PC)++;
 			break;
 
 		case (BLT):
 			if (registers[inst->rs] < registers[inst->rt])
 				*PC = (registers[inst->rm] & 0xfff);
+			else (*PC)++;
 			break;
 
 		case (BGT):
 			if (registers[inst->rs] > registers[inst->rt])
 				*PC = (registers[inst->rm] & 0xfff);
+			else (*PC)++;
 			break;
 
 		case (BLE):
 			if (registers[inst->rs] <= registers[inst->rt])
 				*PC = (registers[inst->rm] & 0xfff);
+			else (*PC)++;
 			break;
 
 		case (BGE):
 			if (registers[inst->rs] >= registers[inst->rt])
 				*PC = (registers[inst->rm] & 0xfff);
+			else (*PC)++;
 			break;
 
 		case (JAL):
-			value = *PC;
+			value = *PC + 1;
 			update_rd(inst->rd, value, registers);
 			*PC = registers[inst->rm] & 0xfff;
 			break;
@@ -205,10 +220,12 @@ void execute(Instruction* inst, unsigned short* PC, int* registers, int* IOregis
 		case (LW):
 			value = memory[registers[inst->rs] + registers[inst->rt]] + registers[inst->rm];
 			update_rd(inst->rd, value, registers);
+			(*PC)++;
 			break;
 
 		case (SW):
 			memory[registers[inst->rs] + registers[inst->rt]] = registers[inst->rm] + registers[inst->rd];
+			(*PC)++;
 			break;
 
 		case (RETI):
@@ -221,14 +238,17 @@ void execute(Instruction* inst, unsigned short* PC, int* registers, int* IOregis
 				value = 0;
 			value = IOregisters[registers[inst->rs] + registers[inst->rt]];
 			update_rd(inst->rd, value, registers);
+			(*PC)++;
 			break;
 
 		case (OUT):
 			IOregisters[registers[inst->rs] + registers[inst->rt]] = registers[inst->rm];
+			(*PC)++;
 			break;
 
 		case (HALT):
 			*halt = 1;
+			(*PC)++;
 			break;
 	}
 }
@@ -260,4 +280,19 @@ unsigned long long int* load_irq2_cycles(FILE* input)
 	output = (unsigned long long int*)realloc(output, (cur_size+1) * sizeof(unsigned long long int*));
 	output[cur_size] = 0;
 	return output;
+}
+
+void update_trace(int PC, INSTRUCTION_TYPE instruction, DATA_TYPE* registers, FILE* output)
+{
+	fprintf(output, "%03d %012lX", PC, instruction);
+	for (int i = 0; i < NUM_REGISTERS; i++)
+	{
+		fprintf(output, " %08x", registers[i]);
+	}
+	fprintf(output, "\n");
+}
+
+void update_hwtrace(unsigned long long int cycle, OpCode code, IOHWRegister name, DATA_TYPE data, FILE* output)
+{
+
 }

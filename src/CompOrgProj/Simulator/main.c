@@ -60,7 +60,9 @@ int main(int argc, char* argv[])
         printf("executing instruction: %d\r\n", PC);
 
         // fetch and decode:
-        parse_instruction(instructions_memory[PC++], &current);
+        parse_instruction(instructions_memory[PC], &current);
+
+        update_trace(PC, instructions_memory[PC], registers, trace);
 
         execute(&current, &PC, registers, IOregisters, data_memory, &halt, &in_interrupt);
 
@@ -103,8 +105,7 @@ int main(int argc, char* argv[])
 
         //is_irq2(cycles_counter)
          //   IOregisters[IRQ2STATUS] = 1;
-        // TODO: update trace.txt
-        // 
+
         if (current.opcode == OUT || current.opcode == IN);
             // TODO: update hwregtrace.txt (only if out or in!)
         cycles_counter++;
