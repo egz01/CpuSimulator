@@ -284,7 +284,7 @@ unsigned long long int* load_irq2_cycles(FILE* input)
 
 void update_trace(int PC, INSTRUCTION_TYPE instruction, DATA_TYPE* registers, FILE* output)
 {
-	fprintf(output, "%03d %012lX", PC, instruction);
+	fprintf(output, "%03X %012llX", PC, instruction);
 	for (int i = 0; i < NUM_REGISTERS; i++)
 	{
 		fprintf(output, " %08x", registers[i]);
