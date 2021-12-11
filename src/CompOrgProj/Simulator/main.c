@@ -30,10 +30,7 @@ int main(int argc, char* argv[])
     
     INSTRUCTION_TYPE* instructions_memory = (INSTRUCTION_TYPE*)malloc(sizeof(INSTRUCTION_TYPE) * INSTRUCTIONS_DEPTH);
     DATA_TYPE* data_memory = (DATA_TYPE*)malloc(sizeof(DATA_TYPE) * MEMORY_DEPTH);
-    
-    DATA_TYPE** arr = (DATA_TYPE**)malloc(SCREEN_X * sizeof(DATA_TYPE*));
-    for (int i = 0; i < SCREEN_X; i++)
-        arr[i] = (int*)calloc(SCREEN_X, sizeof(DATA_TYPE));
+    DATA_TYPE* screen_buffer = (DATA_TYPE*)calloc(SCREEN_X * SCREEN_Y, sizeof(DATA_TYPE));
 
     Instruction current;
     DATA_TYPE registers[NUM_REGISTERS] = { 0 };
@@ -41,6 +38,7 @@ int main(int argc, char* argv[])
     unsigned short PC = 0;
     BOOL halt = FALSE;
     unsigned long long int cycles_counter = 0;
+    unsigned int timer_counter;
 
     load_instruction_bytes(imemin, instructions_memory);
     load_data_bytes(dmemin, data_memory);
@@ -54,11 +52,28 @@ int main(int argc, char* argv[])
         
         execute(&current, &PC, registers, IOregisters, data_memory, &halt);
 
-        // TODO: advance timer
+        // timer handling
+        if (IOregisters[TIMERENABLE])
+        {
+            if (IOregisters[TIMERCURRENT] == IOregisters[TIMERMAX])
+            {
+                IOregisters[TIMERCURRENT] = 0;
+                // set irqstatus0
+            }
+            else
+                IOregisters[TIMERCURRENT]++;
+        }
 
         // TODO: udpate monitor
-        
+        if (IOregisters[MONITORCMD])
+        {
+            IOregisters[MONITORADDR] = IOregisters[MONITORDATA];
+        }
+
+
         // TODO: update disk
+
+        
 
         /*
         if (cycles_counter in irq2list):

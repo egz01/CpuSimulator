@@ -94,6 +94,12 @@ int read_line(FILE* input, char* line)
 	return i;
 }
 
+void update_rd(int rd, int value, int* registers)
+{
+	if (rd != ZERO && rd != IMM1 && rd != IMM2)
+		registers[rd] = value;
+}
+
 /// <summary>
 /// preforms execution of given instruction
 /// </summary>
@@ -106,6 +112,7 @@ int read_line(FILE* input, char* line)
 void execute(Instruction* inst, unsigned short* PC, int* registers, int* IOregisters, DATA_TYPE* memory, BOOL* halt)
 {
 	unsigned int temp = 0;
+	int value = 0;
 	registers[ZERO] = 0;
 	registers[IMM1] = inst->immediate1;
 	registers[IMM2] = inst->immediate2;
@@ -113,41 +120,50 @@ void execute(Instruction* inst, unsigned short* PC, int* registers, int* IOregis
 	switch (inst->opcode)
 	{
 		case (ADD):
-			registers[inst->rd] = registers[inst->rs] + registers[inst->rt] + registers[inst->rm];
+			value = registers[inst->rs] + registers[inst->rt] + registers[inst->rm];
+			update_rd(inst->rd, value, registers);
 			break;
 
 		case (SUB):
-			registers[inst->rd] = registers[inst->rs] - registers[inst->rt] - registers[inst->rm];
+			value = registers[inst->rs] - registers[inst->rt] - registers[inst->rm];
+			update_rd(inst->rd, value, registers);
 			break;
 
 		case (MAC):
-			registers[inst->rd] = registers[inst->rs] * registers[inst->rt] + registers[inst->rm];
+			value = registers[inst->rs] * registers[inst->rt] + registers[inst->rm];
+			update_rd(inst->rd, value, registers);
 			break;
 
 		case (AND):
-			registers[inst->rd] = registers[inst->rs] & registers[inst->rt] & registers[inst->rm];
+			value = registers[inst->rs] & registers[inst->rt] & registers[inst->rm];
+			update_rd(inst->rd, value, registers);
 			break;
 
 		case (OR):
-			registers[inst->rd] = registers[inst->rs] | registers[inst->rt] | registers[inst->rm];
+			value = registers[inst->rs] | registers[inst->rt] | registers[inst->rm];
+			update_rd(inst->rd, value, registers);
 			break;
 
 		case (XOR):
-			registers[inst->rd] = registers[inst->rs] ^ registers[inst->rt] ^ registers[inst->rm];
+			value = registers[inst->rs] ^ registers[inst->rt] ^ registers[inst->rm];
+			update_rd(inst->rd, value, registers);
 			break;
 
 		case (SLL):
-			registers[inst->rd] = registers[inst->rs] >> registers[inst->rt];
+			value = registers[inst->rs] >> registers[inst->rt];
+			update_rd(inst->rd, value, registers);
 			break;
 
 		case (SRA):
-			registers[inst->rd] = registers[inst->rs] >> registers[inst->rt];
+			value = registers[inst->rs] >> registers[inst->rt];
+			update_rd(inst->rd, value, registers);
 			break;
 
 		case (SRL):
 			temp = (unsigned)registers[inst->rs];
 			temp >>= registers[inst->rt];
 			registers[inst->rd] = (signed)temp;
+			update_rd(inst->rd, value, registers);
 			break;
 
 		case (BEQ):
@@ -181,12 +197,14 @@ void execute(Instruction* inst, unsigned short* PC, int* registers, int* IOregis
 			break;
 
 		case (JAL):
-			registers[inst->rd] = *PC;
+			value = *PC;
+			update_rd(inst->rd, value, registers);
 			*PC = registers[inst->rm] & 0xfff;
 			break;
 
 		case (LW):
-			registers[inst->rd] = memory[registers[inst->rs] + registers[inst->rt]] + registers[inst->rm];
+			value = memory[registers[inst->rs] + registers[inst->rt]] + registers[inst->rm];
+			update_rd(inst->rd, value, registers);
 			break;
 
 		case (SW):
@@ -198,7 +216,10 @@ void execute(Instruction* inst, unsigned short* PC, int* registers, int* IOregis
 			break;
 
 		case (IN):
-			registers[inst->rd] = IOregisters[registers[inst->rs] + registers[inst->rt]];
+			if (registers[inst->rs] + registers[inst->rt] == MONITORCMD)
+				value = 0;
+			value = IOregisters[registers[inst->rs] + registers[inst->rt]];
+			update_rd(inst->rd, value, registers);
 			break;
 
 		case (OUT):
