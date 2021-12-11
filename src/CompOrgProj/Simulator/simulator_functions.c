@@ -109,7 +109,7 @@ void update_rd(int rd, int value, int* registers)
 /// <param name="IOregisters">IO access</param>
 /// <param name="memory">ram access</param>
 /// <param name="halt">(out) indicates whether instructed to halt program</param>
-void execute(Instruction* inst, unsigned short* PC, int* registers, int* IOregisters, DATA_TYPE* memory, BOOL* halt)
+void execute(Instruction* inst, unsigned short* PC, int* registers, int* IOregisters, DATA_TYPE* memory, BOOL* halt, BOOL* in_interrupt)
 {
 	unsigned int temp = 0;
 	int value = 0;
@@ -213,6 +213,7 @@ void execute(Instruction* inst, unsigned short* PC, int* registers, int* IOregis
 
 		case (RETI):
 			*PC = IOregisters[IRQRETURN];
+			*in_interrupt = FALSE;
 			break;
 
 		case (IN):
@@ -230,4 +231,33 @@ void execute(Instruction* inst, unsigned short* PC, int* registers, int* IOregis
 			*halt = 1;
 			break;
 	}
+}
+
+/// <summary>
+/// reads irq2 activation cycles
+/// </summary>
+/// <param name="input"></param>
+/// <param name="output"></param>
+unsigned long long int* load_irq2_cycles(FILE* input)
+{
+	char line[LINE_MAX_LENGTH_IN_BYTES];
+	int size = 1000;
+	int cur_size = 0;
+	unsigned long long int* output = (unsigned long long int*)malloc(sizeof(unsigned long long int) * size);
+	unsigned long long int num = 0;
+	
+	while (read_line(input, line) > 0)
+	{
+		sscanf(line, "%lld", &num);
+		output[cur_size] = num;
+		cur_size++;
+		if (cur_size > size)
+		{
+			size *= 2;
+			realloc(output, size * sizeof(unsigned long long int*));
+		}
+	}
+	output = (unsigned long long int*)realloc(output, (cur_size+1) * sizeof(unsigned long long int*));
+	output[cur_size] = 0;
+	return output;
 }

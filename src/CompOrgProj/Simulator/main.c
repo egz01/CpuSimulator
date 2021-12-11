@@ -27,7 +27,17 @@ int main(int argc, char* argv[])
     FILE* monitor_yuv = fopen(argv[14], "w");
 
     // TODO: parse irq2in.txt into some array
-    
+    unsigned long long int* irq2cycles = NULL;
+    irq2cycles = load_irq2_cycles(irq2in);
+
+#ifdef TEST
+    while ((*irq2cycles) != 0)
+    {
+        printf("%lld\n", *irq2cycles);
+        irq2cycles++;
+    }
+#endif
+
     INSTRUCTION_TYPE* instructions_memory = (INSTRUCTION_TYPE*)malloc(sizeof(INSTRUCTION_TYPE) * INSTRUCTIONS_DEPTH);
     DATA_TYPE* data_memory = (DATA_TYPE*)malloc(sizeof(DATA_TYPE) * MEMORY_DEPTH);
     DATA_TYPE* screen_buffer = (DATA_TYPE*)calloc(SCREEN_X * SCREEN_Y, sizeof(DATA_TYPE));
@@ -37,6 +47,8 @@ int main(int argc, char* argv[])
     DATA_TYPE IOregisters[NUM_IOREGISTERS] = { 0 };
     unsigned short PC = 0;
     BOOL halt = FALSE;
+    BOOL irq = 0;
+    BOOL in_interrupt = 0;
     unsigned long long int cycles_counter = 0;
     unsigned int timer_counter;
 
@@ -49,8 +61,8 @@ int main(int argc, char* argv[])
 
         // fetch and decode:
         parse_instruction(instructions_memory[PC++], &current);
-        
-        execute(&current, &PC, registers, IOregisters, data_memory, &halt);
+
+        execute(&current, &PC, registers, IOregisters, data_memory, &halt, &in_interrupt);
 
         // timer handling
         if (IOregisters[TIMERENABLE])
@@ -58,37 +70,39 @@ int main(int argc, char* argv[])
             if (IOregisters[TIMERCURRENT] == IOregisters[TIMERMAX])
             {
                 IOregisters[TIMERCURRENT] = 0;
-                // set irqstatus0
+                IOregisters[IRQ0STATUS] = 1;
             }
             else
                 IOregisters[TIMERCURRENT]++;
         }
 
-        // TODO: udpate monitor
         if (IOregisters[MONITORCMD])
         {
             IOregisters[MONITORADDR] = IOregisters[MONITORDATA];
         }
 
-
         // TODO: update disk
 
-        
+        irq = (IOregisters[IRQ0ENABLE] && IOregisters[IRQ0STATUS] ||
+               IOregisters[IRQ1ENABLE] && IOregisters[IRQ1STATUS] ||
+               IOregisters[IRQ2ENABLE] && IOregisters[IRQ2STATUS]);
 
-        /*
-        if (cycles_counter in irq2list):
-            enable irq2
-
-        execute();
-        
-        irq = (irq0enable & irq0status) | (irq1enable & irq1status) | (irq2enable & irq2status)
-
-        if (irq && not_in_interrupt())
+        if (irq)
         {
-            
+            if (!in_interrupt)
+            {
+                in_interrupt = TRUE;
+                IOregisters[IRQRETURN] = PC;
+                PC = IOregisters[IRQHANDLER];
+            }
+            else
+            {
+                // do nothing
+            }
         }
-        */
 
+        //is_irq2(cycles_counter)
+         //   IOregisters[IRQ2STATUS] = 1;
         // TODO: update trace.txt
         // 
         if (current.opcode == OUT || current.opcode == IN);
@@ -117,4 +131,5 @@ int main(int argc, char* argv[])
     fclose(diskout);
     fclose(monitor);
     fclose(monitor_yuv);
+    free(irq2cycles);
 }
