@@ -5,6 +5,15 @@
 #include <definitions.h>
 #include "simulator_functions.h"
 
+#define DEBUG
+#undef DEBUG
+
+#ifdef DEBUG
+#define log printf
+#else
+#define log
+#endif
+
 int main(int argc, char* argv[])
 {
     // BOOT 
@@ -24,10 +33,10 @@ int main(int argc, char* argv[])
     FILE* display7seg = fopen(argv[11], "w");
     FILE* diskout     = fopen(argv[12], "w");
     FILE* monitor     = fopen(argv[13], "w");
-    FILE* monitor_yuv = fopen(argv[14], "w");
+    FILE* monitor_yuv = fopen(argv[14], "wb");
 
     // TODO: parse irq2in.txt into some array
-    unsigned long long int* irq2cycles = NULL;
+    long long int* irq2cycles = NULL;
     irq2cycles = load_irq2_cycles(irq2in);
 
 #ifdef TEST
@@ -49,7 +58,7 @@ int main(int argc, char* argv[])
     BOOL halt = FALSE;
     BOOL irq = 0;
     BOOL in_interrupt = 0;
-    unsigned long long int cycles_counter = 0;
+    long long int cycles_counter = 0;
     unsigned int timer_counter;
 
     load_instruction_bytes(imemin, instructions_memory);
@@ -57,10 +66,15 @@ int main(int argc, char* argv[])
 
     while (!halt && PC < INSTRUCTIONS_DEPTH)
     {
-        printf("executing instruction: %d\r\n", PC);
+        log("executing instruction: %x\r\n", PC);
 
         // fetch and decode:
         parse_instruction(instructions_memory[PC], &current);
+
+        // hard-wired values:
+        registers[ZERO] = 0;
+        registers[IMM1] = current.immediate1;
+        registers[IMM2] = current.immediate2;
 
         update_trace(PC, instructions_memory[PC], registers, trace);
 
@@ -80,7 +94,12 @@ int main(int argc, char* argv[])
 
         if (IOregisters[MONITORCMD])
         {
-            IOregisters[MONITORADDR] = IOregisters[MONITORDATA];
+            screen_buffer[IOregisters[MONITORADDR]] = IOregisters[MONITORDATA];
+        }
+
+        if (irq2triggered(cycles_counter, irq2cycles))
+        {
+            IOregisters[IRQ2STATUS] = 1;
         }
 
         // TODO: update disk
@@ -102,9 +121,6 @@ int main(int argc, char* argv[])
                 // do nothing
             }
         }
-
-        //is_irq2(cycles_counter)
-         //   IOregisters[IRQ2STATUS] = 1;
 
         if (current.opcode == OUT || current.opcode == IN);
             // TODO: update hwregtrace.txt (only if out or in!)

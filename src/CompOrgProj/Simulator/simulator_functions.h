@@ -13,8 +13,9 @@ INSTRUCTION_TYPE get_numeric_value_from_hex_instruction(const char* field);
 DATA_TYPE get_numeric_value_from_hex_data(const char* field);
 int read_line(FILE* input, char* line);
 void execute(Instruction* instruction, unsigned short* PC, int* registers, int* IOregisters, DATA_TYPE* memory, BOOL* halt, BOOL* in_interrupt);
-unsigned long long int* load_irq2_cycles(FILE* input);
+long long int* load_irq2_cycles(FILE* input);
 void update_trace(int PC, INSTRUCTION_TYPE instruction, DATA_TYPE* registers, FILE* output);
 void update_hwtrace(unsigned long long int cycle, OpCode code, IOHWRegister name, DATA_TYPE data, FILE* output);
+BOOL irq2triggered(long long cycle_num, long long* irq2cycles);
 
 #endif

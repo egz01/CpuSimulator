@@ -113,9 +113,6 @@ void execute(Instruction* inst, unsigned short* PC, int* registers, int* IOregis
 {
 	unsigned int temp = 0;
 	int value = 0;
-	registers[ZERO] = 0;
-	registers[IMM1] = inst->immediate1;
-	registers[IMM2] = inst->immediate2;
 
 	switch (inst->opcode)
 	{
@@ -156,7 +153,7 @@ void execute(Instruction* inst, unsigned short* PC, int* registers, int* IOregis
 			break;
 
 		case (SLL):
-			value = registers[inst->rs] >> registers[inst->rt];
+			value = registers[inst->rs] << registers[inst->rt];
 			update_rd(inst->rd, value, registers);
 			(*PC)++;
 			break;
@@ -258,13 +255,13 @@ void execute(Instruction* inst, unsigned short* PC, int* registers, int* IOregis
 /// </summary>
 /// <param name="input"></param>
 /// <param name="output"></param>
-unsigned long long int* load_irq2_cycles(FILE* input)
+long long int* load_irq2_cycles(FILE* input)
 {
 	char line[LINE_MAX_LENGTH_IN_BYTES];
 	int size = 1000;
 	int cur_size = 0;
-	unsigned long long int* output = (unsigned long long int*)malloc(sizeof(unsigned long long int) * size);
-	unsigned long long int num = 0;
+	long long int* output = (long long int*)malloc(sizeof(long long int) * size);
+	long long int num = 0;
 	
 	while (read_line(input, line) > 0)
 	{
@@ -274,12 +271,22 @@ unsigned long long int* load_irq2_cycles(FILE* input)
 		if (cur_size > size)
 		{
 			size *= 2;
-			realloc(output, size * sizeof(unsigned long long int*));
+			realloc(output, size * sizeof(long long int*));
 		}
 	}
-	output = (unsigned long long int*)realloc(output, (cur_size+1) * sizeof(unsigned long long int*));
-	output[cur_size] = 0;
+	output = (long long int*)realloc(output, (cur_size+1) * sizeof(long long int*));
+	output[cur_size] = -1;
 	return output;
+}
+
+BOOL irq2triggered(long long cycle_num, long long* irq2cycles)
+{
+	long long c;
+	while ((c = *(irq2cycles++)) != -1)
+	{
+		if (cycle_num == c) return TRUE;
+	}
+	return FALSE;
 }
 
 void update_trace(int PC, INSTRUCTION_TYPE instruction, DATA_TYPE* registers, FILE* output)
