@@ -6,7 +6,6 @@
 #include "simulator_functions.h"
 
 #define DEBUG
-#undef DEBUG
 
 #ifdef DEBUG
 #define log printf
@@ -35,7 +34,6 @@ int main(int argc, char* argv[])
     FILE* monitor     = fopen(argv[13], "w");
     FILE* monitor_yuv = fopen(argv[14], "wb");
 
-    // TODO: parse irq2in.txt into some array
     long long int* irq2cycles = NULL;
     irq2cycles = load_irq2_cycles(irq2in);
 
@@ -122,8 +120,8 @@ int main(int argc, char* argv[])
             }
         }
 
-        if (current.opcode == OUT || current.opcode == IN);
-            // TODO: update hwregtrace.txt (only if out or in!)
+        if (current.opcode == OUT || current.opcode == IN)
+            update_hwtrace(cycles_counter, current.opcode, registers[current.rs] + registers[current.rt], IOregisters[registers[current.rs] + registers[current.rt]], hwregtrace);
         cycles_counter++;
     }
 

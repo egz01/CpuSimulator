@@ -5,6 +5,8 @@
 #include <structs.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
+#include <ctype.h>
 
 void parse_instruction(INSTRUCTION_TYPE instruction_bytes, Instruction* inst);
 void load_instruction_bytes(FILE*, INSTRUCTION_TYPE*);
@@ -15,7 +17,8 @@ int read_line(FILE* input, char* line);
 void execute(Instruction* instruction, unsigned short* PC, int* registers, int* IOregisters, DATA_TYPE* memory, BOOL* halt, BOOL* in_interrupt);
 long long int* load_irq2_cycles(FILE* input);
 void update_trace(int PC, INSTRUCTION_TYPE instruction, DATA_TYPE* registers, FILE* output);
-void update_hwtrace(unsigned long long int cycle, OpCode code, IOHWRegister name, DATA_TYPE data, FILE* output);
+void update_hwtrace(long long int cycle, OpCode code, IOHWRegister name, DATA_TYPE data, FILE* output);
 BOOL irq2triggered(long long cycle_num, long long* irq2cycles);
+void get_string_from_opcode(IOHWRegister code, char str[]);
 
 #endif

@@ -299,7 +299,88 @@ void update_trace(int PC, INSTRUCTION_TYPE instruction, DATA_TYPE* registers, FI
 	fprintf(output, "\n");
 }
 
-void update_hwtrace(unsigned long long int cycle, OpCode code, IOHWRegister name, DATA_TYPE data, FILE* output)
+void update_hwtrace(long long int cycle, OpCode code, IOHWRegister name, DATA_TYPE data, FILE* output)
 {
+	char str[100];
+	get_string_from_opcode(name, str);
 
+	fprintf(output, "%ld ", cycle);
+	if (code == IN)
+		fprintf(output, "%s ", "READ");
+	else if (code == OUT)
+		fprintf(output, "%s ", "WRITE");
+	fprintf(output, "%s ", str);
+	fprintf(output, "%08lx\n", data);
+}
+
+void get_string_from_opcode(IOHWRegister code, char str[])
+{
+	if (code == 0)
+		memcpy(str, "irq0enable", 1 + strlen("irq0enable"));
+
+	else if (code == 1)
+		memcpy(str, "irq1enable", 1 + strlen("irq1enable"));
+
+	else if (code == 2)
+		memcpy(str, "irq2enable", 1 + strlen("irq2enable"));
+
+	else if (code == 3)
+		memcpy(str, "irq0status", 1 + strlen("irq0status"));
+
+	else if (code == 4)
+		memcpy(str, "irq1status", 1 + strlen("irq1status"));
+
+	else if (code == 5)
+		memcpy(str, "irq2status", 1 + strlen("irq2status"));
+
+	else if (code == 6)
+		memcpy(str, "irqhandler", 1 + strlen("irqhandler"));
+
+	else if (code == 7)
+		memcpy(str, "irqreturn", 1 + strlen("irqreturn"));
+
+	else if (code == 8)
+		memcpy(str, "clks", 1 + strlen("clks"));
+
+	else if (code == 9)
+		memcpy(str, "leds", 1 + strlen("leds"));
+
+	else if (code == 10)
+		memcpy(str, "display7seg", 1 + strlen("display7seg"));
+
+	else if (code == 11)
+		memcpy(str, "timerenable", 1 + strlen("timerenable"));
+
+	else if (code == 12)
+		memcpy(str, "timercurrent", 1 + strlen("timercurrent"));
+
+	else if (code == 13)
+		memcpy(str, "timermax", 1 + strlen("timermax"));
+
+	else if (code == 14)
+		memcpy(str, "diskcmd", 1 + strlen("diskcmd"));
+
+	else if (code == 15)
+		memcpy(str, "disksector", 1 + strlen("disksector"));
+
+	else if (code == 16)
+		memcpy(str, "diskbuffer", 1 + strlen("diskbuffer"));
+
+	else if (code == 17)
+		memcpy(str, "diskstatus", 1 + strlen("diskstatus"));
+
+	else if (code == 18)
+		memcpy(str, "reserved1", 1 + strlen("reserved1"));
+
+	else if (code == 19)
+		memcpy(str, "reserved2", 1 + strlen("reserved2"));
+
+	else if (code == 20)
+		memcpy(str, "monitoraddr", 1 + strlen("monitoraddr"));
+
+	else if (code == 21)
+		memcpy(str, "monitordata", 1 + strlen("monitordata"));
+
+	else if (code == 22)
+		memcpy(str, "monitorcmd", 1 + strlen("monitorcmd"));
 }
