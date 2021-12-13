@@ -46,6 +46,35 @@ void load_data_bytes(FILE* input, DATA_TYPE* output) {
 	}
 }
 
+void dump_disk_data(FILE* output_stream, DATA_TYPE* output_data)
+{
+	for (int i = 0; i < DISK_SECTORS * SECTOR_SIZE_IN_BYTES; i++)
+	{
+		fprintf(output_stream, "%08X\n", output_data[i]);
+	}
+}
+
+void dump_byte_data(FILE* output_stream, char* output_data)
+{
+	for (int i = 0; i < DISK_SECTORS * SECTOR_SIZE_IN_BYTES; i++)
+	{
+		fprintf(output_stream, "%02hhX\n", output_data[i]);
+	}
+}
+
+void dump_pixels_string(FILE* output_stream, char* output_data)
+{
+	for (int i = 0; i < SCREEN_X * SCREEN_Y; i++)
+	{
+		fprintf(output_stream, "%02hhX\n", output_data[i]);
+	}
+}
+
+void dump_pixels_binary(FILE* binary_stream, char* output_data)
+{
+	fwrite(output_data, 1, DISK_SECTORS * SECTOR_SIZE_IN_BYTES, binary_stream);
+}
+
 /// <summary>
 /// returns a numeric value inside field, using labels as a map to labels indices
 /// </summary>

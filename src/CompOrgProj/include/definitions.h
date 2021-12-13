@@ -27,6 +27,9 @@
 #define SCREEN_X 256
 #define SCREEN_Y 256
 
+#define DISK_SECTORS 128
+#define SECTOR_SIZE_IN_BYTES 512
+
 // instruction structure
 #define OPCODE_BITS 8
 #define	RD_BITS 4

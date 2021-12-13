@@ -37,17 +37,14 @@ int main(int argc, char* argv[])
     long long int* irq2cycles = NULL;
     irq2cycles = load_irq2_cycles(irq2in);
 
-#ifdef TEST
-    while ((*irq2cycles) != 0)
-    {
-        printf("%lld\n", *irq2cycles);
-        irq2cycles++;
-    }
-#endif
-
     INSTRUCTION_TYPE* instructions_memory = (INSTRUCTION_TYPE*)malloc(sizeof(INSTRUCTION_TYPE) * INSTRUCTIONS_DEPTH);
     DATA_TYPE* data_memory = (DATA_TYPE*)malloc(sizeof(DATA_TYPE) * MEMORY_DEPTH);
-    DATA_TYPE* screen_buffer = (DATA_TYPE*)calloc(SCREEN_X * SCREEN_Y, sizeof(DATA_TYPE));
+    char* screen_buffer = (char*)calloc(SCREEN_X * SCREEN_Y, sizeof(char));
+    DATA_TYPE* disk = (DATA_TYPE*)calloc(DISK_SECTORS*SECTOR_SIZE_IN_BYTES, sizeof(DATA_TYPE));
+
+    load_data_bytes(diskin, disk);
+    load_instruction_bytes(imemin, instructions_memory);
+    load_data_bytes(dmemin, data_memory);
 
     Instruction current;
     DATA_TYPE registers[NUM_REGISTERS] = { 0 };
@@ -59,14 +56,11 @@ int main(int argc, char* argv[])
     long long int cycles_counter = 0;
     unsigned int timer_counter;
 
-    load_instruction_bytes(imemin, instructions_memory);
-    load_data_bytes(dmemin, data_memory);
-
     while (!halt && PC < INSTRUCTIONS_DEPTH)
     {
         log("executing instruction: %x\r\n", PC);
 
-        // fetch and decode:
+        // fetch & decode instruction
         parse_instruction(instructions_memory[PC], &current);
 
         // hard-wired values:
@@ -76,9 +70,10 @@ int main(int argc, char* argv[])
 
         update_trace(PC, instructions_memory[PC], registers, trace);
 
+        // execute instruction
         execute(&current, &PC, registers, IOregisters, data_memory, &halt, &in_interrupt);
 
-        // timer handling
+        // timer logic
         if (IOregisters[TIMERENABLE])
         {
             if (IOregisters[TIMERCURRENT] == IOregisters[TIMERMAX])
@@ -90,18 +85,24 @@ int main(int argc, char* argv[])
                 IOregisters[TIMERCURRENT]++;
         }
 
-        if (IOregisters[MONITORCMD])
-        {
-            screen_buffer[IOregisters[MONITORADDR]] = IOregisters[MONITORDATA];
-        }
+        // irq1 logic
 
+        // irq2 logic
         if (irq2triggered(cycles_counter, irq2cycles))
         {
             IOregisters[IRQ2STATUS] = 1;
         }
 
+        // monitor logic
+        if (IOregisters[MONITORCMD])
+        {
+            screen_buffer[IOregisters[MONITORADDR]] = IOregisters[MONITORDATA];
+            IOregisters[MONITORCMD] = 0; // handled monitor updating, toggle command bit
+        }
+
         // TODO: update disk
 
+        // interrupt polling
         irq = (IOregisters[IRQ0ENABLE] && IOregisters[IRQ0STATUS] ||
                IOregisters[IRQ1ENABLE] && IOregisters[IRQ1STATUS] ||
                IOregisters[IRQ2ENABLE] && IOregisters[IRQ2STATUS]);
@@ -116,21 +117,27 @@ int main(int argc, char* argv[])
             }
             else
             {
-                // do nothing
+                // do nothing, wait for in_interrupt to toggle
             }
         }
 
+        // hardware tracing
         if (current.opcode == OUT || current.opcode == IN)
-            update_hwtrace(cycles_counter, current.opcode, registers[current.rs] + registers[current.rt], IOregisters[registers[current.rs] + registers[current.rt]], hwregtrace);
+        {
+            update_hwtrace(cycles_counter, current.opcode, registers[current.rs] + registers[current.rt],
+                IOregisters[registers[current.rs] + registers[current.rt]], hwregtrace);
+        }
+
+        // advance in cycles counting
         cycles_counter++;
     }
 
     // TODO: write data_memory to dmemout.txt
     // TODO: write registers to regout.txt
     // TODO: write to cycles_counter to cycles.txt
-    // TODO: write diskout.txt
-    // TODO: write screen_buffer to monitor.txt
-    // TODO: write screen_buffer to monitor.yuv
+    dump_disk_data(diskout, disk); // dump disk to diskout.txt
+    dump_pixels_string(monitor, screen_buffer);// TODO: write screen_buffer to monitor.txt
+    dump_pixels_binary(monitor_yuv, screen_buffer);
 
     fclose(imemin);
     fclose(dmemin);
