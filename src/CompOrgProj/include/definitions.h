@@ -7,6 +7,13 @@
 #define FALSE 0
 #define INSTRUCTION_TYPE unsigned long long int
 #define DATA_TYPE unsigned int
+#define NOOP 0
+#define READ 1
+#define WRITE 2
+#define FREE 0
+#define BUSY 1
+#define ENABLED 1
+#define DISABLED 0
 
 // physical limitations constants
 #define INSTRUCTIONS_DEPTH 4096
@@ -29,6 +36,7 @@
 
 #define DISK_SECTORS 128
 #define SECTOR_SIZE_IN_BYTES 512
+#define DISK_OPERATION_CYCLE_LENGTH 1024
 
 // instruction structure
 #define OPCODE_BITS 8

@@ -75,10 +75,10 @@ void dump_pixels_binary(FILE* binary_stream, char* output_data)
 	fwrite(output_data, 1, DISK_SECTORS * SECTOR_SIZE_IN_BYTES, binary_stream);
 }
 
-int find_dmemory_index(DATA_TYPE* data_memory)
+int find_dmemory_index(DATA_TYPE* data_memory, int max_size)
 {
 	int last_non_zero_index = 0;
-	for (int i = 0; i < MEMORY_DEPTH; i++)
+	for (int i = 0; i < max_size; i++)
 	{
 		if (data_memory[i] != 0)
 		{

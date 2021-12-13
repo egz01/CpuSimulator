@@ -41,6 +41,7 @@ int main(int argc, char* argv[])
     DATA_TYPE* data_memory = (DATA_TYPE*)calloc(MEMORY_DEPTH, sizeof(DATA_TYPE));
     char* screen_buffer = (char*)calloc(SCREEN_X * SCREEN_Y, sizeof(char));
     DATA_TYPE* disk = (DATA_TYPE*)calloc(DISK_SECTORS*SECTOR_SIZE_IN_BYTES, sizeof(DATA_TYPE));
+    DATA_TYPE* dma = (DATA_TYPE*)calloc(SECTOR_SIZE_IN_BYTES, sizeof(DATA_TYPE));
 
     load_data_bytes(diskin, disk);
     load_instruction_bytes(imemin, instructions_memory);
@@ -55,6 +56,7 @@ int main(int argc, char* argv[])
     BOOL in_interrupt = 0;
     long long int cycles_counter = 0;
     unsigned int timer_counter;
+    short disk_counter = 1024;
 
     while (!halt && PC < INSTRUCTIONS_DEPTH)
     {
@@ -93,12 +95,45 @@ int main(int argc, char* argv[])
         }
 
         // disk logic (irq1)
+        int cmd = 0;
+        if (IOregisters[DISKSTATUS] == FREE) {
+            cmd = IOregisters[DISKCMD];
+            switch (cmd)
+            {
+                case(READ):
+                    // copy 128 words from disk sector to memory_data[DISKBUFFER]
+                    memcpy(data_memory + IOregisters[DISKBUFFER], disk, SECTOR_SIZE_IN_BYTES / sizeof(DATA_TYPE));
+                    IOregisters[DISKSTATUS] = BUSY;
+                    disk_counter = 0;
+                    break;
 
+                case(WRITE):
+                    // copy 128 words from memory data[DISKBUFFER] to disk sector
+                    memcpy(data_memory + IOregisters[DISKBUFFER], disk, SECTOR_SIZE_IN_BYTES / sizeof(DATA_TYPE));
+                    IOregisters[DISKSTATUS] = BUSY;
+                    disk_counter = 0;
+                    break;
 
+                case(NOOP):
+                default:
+                    break;
+            }
+        }
+
+        else if (IOregisters[DISKSTATUS] == BUSY)
+        {
+            disk_counter++;
+            if (disk_counter == DISK_OPERATION_CYCLE_LENGTH) {
+                IOregisters[DISKSTATUS] = FREE;
+                IOregisters[DISKCMD] = NOOP;
+                IOregisters[IRQ1STATUS] = ENABLED;
+            }
+        }
+        
         // external line interrupt (irq2)
         if (irq2triggered(cycles_counter, irq2cycles))
         {
-            IOregisters[IRQ2STATUS] = 1;
+            IOregisters[IRQ2STATUS] = ENABLED;
         }
 
         // monitor logic
@@ -141,12 +176,13 @@ int main(int argc, char* argv[])
         cycles_counter++;
     }
     
-    int memory_depth = find_dmemory_index(data_memory);
+    int memory_depth = find_dmemory_index(data_memory, MEMORY_DEPTH);
+    int disk_depth = find_dmemory_index(disk, DISK_SECTORS*SECTOR_SIZE_IN_BYTES);
 
     dump_data(dmemout, data_memory, memory_depth + 1);           // dump to dmemout.txt
     dump_data(regout, registers + 3, NUM_REGISTERS - 3);         // dump to regout.txt
     fprintf(cycles, "%ld\n", cycles_counter);                    // dump to cycles.txt
-    dump_data(diskout, disk, DISK_SECTORS*SECTOR_SIZE_IN_BYTES); // dump to diskout.txt
+    dump_data(diskout, disk, disk_depth); // dump to diskout.txt
     dump_pixels_string(monitor, screen_buffer);                  // dump to monitor.txt
     dump_pixels_binary(monitor_yuv, screen_buffer);              // dump to monitor.yuv
 

@@ -24,6 +24,6 @@ void dump_data(FILE* output_stream, DATA_TYPE* output_data, int size);
 void dump_byte_data(FILE* output_stream, char* output_data);
 void dump_pixels_string(FILE* output_stream, char* output_data);
 void dump_pixels_binary(FILE* binary_stream, char* output_data);
-int find_dmemory_index(DATA_TYPE* data_memory);
+int find_dmemory_index(DATA_TYPE* data_memory, int max_size);
 
 #endif
