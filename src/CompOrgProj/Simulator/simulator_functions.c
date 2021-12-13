@@ -46,9 +46,9 @@ void load_data_bytes(FILE* input, DATA_TYPE* output) {
 	}
 }
 
-void dump_disk_data(FILE* output_stream, DATA_TYPE* output_data)
+void dump_data(FILE* output_stream, DATA_TYPE* output_data, int size)
 {
-	for (int i = 0; i < DISK_SECTORS * SECTOR_SIZE_IN_BYTES; i++)
+	for (int i = 0; i < size; i++)
 	{
 		fprintf(output_stream, "%08X\n", output_data[i]);
 	}
@@ -73,6 +73,19 @@ void dump_pixels_string(FILE* output_stream, char* output_data)
 void dump_pixels_binary(FILE* binary_stream, char* output_data)
 {
 	fwrite(output_data, 1, DISK_SECTORS * SECTOR_SIZE_IN_BYTES, binary_stream);
+}
+
+int find_dmemory_index(DATA_TYPE* data_memory, int max_size)
+{
+	int last_non_zero_index = 0;
+	for (int i = 0; i < max_size; i++)
+	{
+		if (data_memory[i] != 0)
+		{
+			last_non_zero_index = i;
+		}
+	}
+	return last_non_zero_index;
 }
 
 /// <summary>

@@ -20,9 +20,10 @@ void update_trace(int PC, INSTRUCTION_TYPE instruction, DATA_TYPE* registers, FI
 void update_hwtrace(long long int cycle, OpCode code, IOHWRegister name, DATA_TYPE data, FILE* output);
 BOOL irq2triggered(long long cycle_num, long long* irq2cycles);
 void get_string_from_opcode(IOHWRegister code, char str[]);
-void dump_disk_data(FILE* output_stream, DATA_TYPE* output_data);
+void dump_data(FILE* output_stream, DATA_TYPE* output_data, int size);
 void dump_byte_data(FILE* output_stream, char* output_data);
 void dump_pixels_string(FILE* output_stream, char* output_data);
 void dump_pixels_binary(FILE* binary_stream, char* output_data);
+int find_dmemory_index(DATA_TYPE* data_memory, int max_size);
 
 #endif
