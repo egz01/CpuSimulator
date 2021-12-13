@@ -38,7 +38,7 @@ int main(int argc, char* argv[])
     irq2cycles = load_irq2_cycles(irq2in);
 
     INSTRUCTION_TYPE* instructions_memory = (INSTRUCTION_TYPE*)malloc(sizeof(INSTRUCTION_TYPE) * INSTRUCTIONS_DEPTH);
-    DATA_TYPE* data_memory = (DATA_TYPE*)malloc(sizeof(DATA_TYPE) * MEMORY_DEPTH);
+    DATA_TYPE* data_memory = (DATA_TYPE*)calloc(MEMORY_DEPTH, sizeof(DATA_TYPE));
     char* screen_buffer = (char*)calloc(SCREEN_X * SCREEN_Y, sizeof(char));
     DATA_TYPE* disk = (DATA_TYPE*)calloc(DISK_SECTORS*SECTOR_SIZE_IN_BYTES, sizeof(DATA_TYPE));
 
@@ -73,6 +73,13 @@ int main(int argc, char* argv[])
         // execute instruction
         execute(&current, &PC, registers, IOregisters, data_memory, &halt, &in_interrupt);
 
+        // hardware tracing
+        if (current.opcode == OUT || current.opcode == IN)
+        {
+            update_hwtrace(cycles_counter, current.opcode, registers[current.rs] + registers[current.rt],
+                IOregisters[registers[current.rs] + registers[current.rt]], hwregtrace);
+        }
+
         // timer logic
         if (IOregisters[TIMERENABLE])
         {
@@ -85,9 +92,10 @@ int main(int argc, char* argv[])
                 IOregisters[TIMERCURRENT]++;
         }
 
-        // irq1 logic
+        // disk logic (irq1)
 
-        // irq2 logic
+
+        // external line interrupt (irq2)
         if (irq2triggered(cycles_counter, irq2cycles))
         {
             IOregisters[IRQ2STATUS] = 1;
@@ -99,8 +107,6 @@ int main(int argc, char* argv[])
             screen_buffer[IOregisters[MONITORADDR]] = IOregisters[MONITORDATA];
             IOregisters[MONITORCMD] = 0; // handled monitor updating, toggle command bit
         }
-
-        // TODO: update disk
 
         // interrupt polling
         irq = (IOregisters[IRQ0ENABLE] && IOregisters[IRQ0STATUS] ||
@@ -121,23 +127,28 @@ int main(int argc, char* argv[])
             }
         }
 
-        // hardware tracing
-        if (current.opcode == OUT || current.opcode == IN)
+        // leds and display7seg
+        int reg = registers[current.rs] + registers[current.rt];
+        if (current.opcode == OUT && (reg == LEDS || reg == DISPLAY7SEG))
         {
-            update_hwtrace(cycles_counter, current.opcode, registers[current.rs] + registers[current.rt],
-                IOregisters[registers[current.rs] + registers[current.rt]], hwregtrace);
+            if (reg == LEDS)
+                fprintf(leds, "%ld %08x\n", cycles_counter, IOregisters[reg]);
+            else
+                fprintf(display7seg, "%ld %08x\n", cycles_counter, IOregisters[reg]);
         }
 
         // advance in cycles counting
         cycles_counter++;
     }
+    
+    int memory_depth = find_dmemory_index(data_memory);
 
-    // TODO: write data_memory to dmemout.txt
-    // TODO: write registers to regout.txt
-    // TODO: write to cycles_counter to cycles.txt
-    dump_disk_data(diskout, disk); // dump disk to diskout.txt
-    dump_pixels_string(monitor, screen_buffer);// TODO: write screen_buffer to monitor.txt
-    dump_pixels_binary(monitor_yuv, screen_buffer);
+    dump_data(dmemout, data_memory, memory_depth + 1);           // dump to dmemout.txt
+    dump_data(regout, registers + 3, NUM_REGISTERS - 3);         // dump to regout.txt
+    fprintf(cycles, "%ld\n", cycles_counter);                    // dump to cycles.txt
+    dump_data(diskout, disk, DISK_SECTORS*SECTOR_SIZE_IN_BYTES); // dump to diskout.txt
+    dump_pixels_string(monitor, screen_buffer);                  // dump to monitor.txt
+    dump_pixels_binary(monitor_yuv, screen_buffer);              // dump to monitor.yuv
 
     fclose(imemin);
     fclose(dmemin);
