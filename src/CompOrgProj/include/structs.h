@@ -40,7 +40,6 @@ typedef struct _Instruction {
 	int rm;
 	int immediate1;
 	int immediate2;
-
 } Instruction;
 
 typedef enum _LineType {
@@ -90,6 +89,7 @@ typedef enum _IOHWRegister {
 	DISKSTATUS,
 	RESERVED1,
 	RESERVED2,
+	MONITORADDR,
 	MONITORDATA,
 	MONITORCMD
 } IOHWRegister;

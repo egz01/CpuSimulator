@@ -2,10 +2,11 @@
 #define _DEFINITIONS
 
 // type definitions for readable code
-#define BOOL char
+#define BOOL int
 #define TRUE 1
 #define FALSE 0
-#define INSTRUCTION unsigned long long
+#define INSTRUCTION_TYPE unsigned long long int
+#define DATA_TYPE unsigned int
 
 // physical limitations constants
 #define INSTRUCTIONS_DEPTH 4096
@@ -22,6 +23,12 @@
 
 #define NUM_REGISTERS 16
 #define NUM_IOREGISTERS 23
+
+#define SCREEN_X 256
+#define SCREEN_Y 256
+
+#define DISK_SECTORS 128
+#define SECTOR_SIZE_IN_BYTES 512
 
 // instruction structure
 #define OPCODE_BITS 8
