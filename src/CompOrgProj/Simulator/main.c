@@ -55,7 +55,6 @@ int main(int argc, char* argv[])
     BOOL irq = 0;
     BOOL in_interrupt = 0;
     long long int cycles_counter = 0;
-    unsigned int timer_counter;
     short disk_counter = 1024;
 
     while (!halt && PC < INSTRUCTIONS_DEPTH)
@@ -102,14 +101,14 @@ int main(int argc, char* argv[])
             {
                 case(READ):
                     // copy 128 words from disk sector to memory_data[DISKBUFFER]
-                    memcpy(data_memory + IOregisters[DISKBUFFER], disk, SECTOR_SIZE_IN_BYTES / sizeof(DATA_TYPE));
+                    memcpy(data_memory + IOregisters[DISKBUFFER], disk + IOregisters[DISKSECTOR]*SECTOR_SIZE_IN_BYTES, SECTOR_SIZE_IN_BYTES / sizeof(DATA_TYPE));
                     IOregisters[DISKSTATUS] = BUSY;
                     disk_counter = 0;
                     break;
 
                 case(WRITE):
                     // copy 128 words from memory data[DISKBUFFER] to disk sector
-                    memcpy(data_memory + IOregisters[DISKBUFFER], disk, SECTOR_SIZE_IN_BYTES / sizeof(DATA_TYPE));
+                    memcpy(disk + IOregisters[DISKSECTOR] * SECTOR_SIZE_IN_BYTES, data_memory + IOregisters[DISKBUFFER], SECTOR_SIZE_IN_BYTES / sizeof(DATA_TYPE));
                     IOregisters[DISKSTATUS] = BUSY;
                     disk_counter = 0;
                     break;
@@ -174,6 +173,10 @@ int main(int argc, char* argv[])
 
         // advance in cycles counting
         cycles_counter++;
+        fflush(leds);
+        fflush(display7seg);
+        fflush(trace);
+        fflush(hwregtrace);
     }
     
     int memory_depth = find_dmemory_index(data_memory, MEMORY_DEPTH);
