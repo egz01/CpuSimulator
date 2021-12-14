@@ -1,0 +1,22 @@
+goal: copy sector 0-> sector 1, sector 1 -> sector 2 etc.
+
+to accomplish this need to first copy 7->8, 6->7 etc. otherwise
+data will be overwritten before it is copied.
+
+C pseudo code:
+
+memory <- array of 512 bytes
+for (int i=6; i>=0; i--)
+{
+	start_copying_from_disk(memory, sector i)
+	while(still_copying)
+	{
+		do nothing
+	}
+	
+	start_copying_to_disk(memory, sector i+1)
+	while (still_copying)
+	{
+		do nothing
+	}
+}

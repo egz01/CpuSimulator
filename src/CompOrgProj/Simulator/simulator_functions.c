@@ -324,7 +324,8 @@ long long int* load_irq2_cycles(FILE* input)
 BOOL irq2triggered(long long cycle_num, long long* irq2cycles)
 {
 	long long c;
-	while ((c = *(irq2cycles++)) != -1)
+	long long* p = irq2cycles;
+	while ((c = *(p++)) != -1)
 	{
 		if (cycle_num == c) return TRUE;
 	}
