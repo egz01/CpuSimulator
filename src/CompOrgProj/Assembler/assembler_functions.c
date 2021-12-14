@@ -146,7 +146,7 @@ LineType parse_line(char* line, Instruction* output, char* labels[INSTRUCTIONS_D
 		strtok(cleaned_line, ":");
 		char* maybe_inst = strtok(NULL, ":");
 		if (maybe_inst)
-			retval = parse_line(maybe_inst, output, cleaned_line, labels);
+			retval = parse_line(maybe_inst, output, labels);
 		else
 			retval = LABEL;
 	}

@@ -16,6 +16,7 @@
 int main(int argc, char* argv[])
 {
 #define DISKTEST
+#undef DISKTEST
 #ifdef DISKTEST
     const char* one = "C:\\Users\\eviat\\Documents\\university\\Semester 5\\Computer Organization\\source\\CompOrgProj\\test_programs\\disktest\\imemin.txt";
     const char* two = "C:\\Users\\eviat\\Documents\\university\\Semester 5\\Computer Organization\\source\\CompOrgProj\\test_programs\\disktest\\dmemin.txt";

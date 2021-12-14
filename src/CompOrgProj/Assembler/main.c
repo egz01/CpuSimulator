@@ -7,6 +7,18 @@
 
 int main(int argc, char* argv[])
 {
+#define DISKTEST
+#undef DISKTEST
+#ifdef DISKTEST
+	const char* program = "C:\\Users\\eviat\\Documents\\university\\Semester 5\\Computer Organization\\source\\CompOrgProj\\test_programs\\disktest\\disktest.asm";
+	const char* imem = "C:\\Users\\eviat\\Documents\\university\\Semester 5\\Computer Organization\\source\\CompOrgProj\\test_programs\\disktest\\imemin.txt";
+	const char* dmem = "C:\\Users\\eviat\\Documents\\university\\Semester 5\\Computer Organization\\source\\CompOrgProj\\test_programs\\disktest\\dmemin.txt";
+
+	memcpy(argv[1], program, strlen(program)+1);
+	memcpy(argv[2], imem, strlen(imem)+1);
+	memcpy(argv[3], dmem, strlen(dmem)+1);
+#endif
+
 	char line[LINE_MAX_LENGTH_IN_BYTES];
 	char cleaned_line[LINE_MAX_LENGTH_IN_BYTES];
 
