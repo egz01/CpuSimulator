@@ -2,7 +2,7 @@
 		out $zero, $imm1, $zero, $imm2, 6, irq1		# set irqhandler as L1
 		add $t0, $imm1, $zero, $zero, 7, 0			# set i = 7
 		add $t1, $zero, $zero, $zero, 0, 0			# set $t1 to 0, used as addr in memory
-for:   	beq $zero, $t0, $imm1, $imm2, -1, end		# iterate until $t0 == 0
+for:   	beq $zero, $t0, $imm1, $imm2, -1, end		# iterate until $t0 == -1
 		out $zero, $imm1, $zero, $zero, 16, 0		# set diskbuffer to 0
 		out $zero, $imm1, $zero, $t0, 15, 0			# set disksector to $t0 which is i
 		out $zero, $imm1, $zero, $imm2, 14, 1		# set diskcmd to read
