@@ -7,16 +7,12 @@
 
 int main(int argc, char* argv[])
 {
-#define DISKTEST
-#undef DISKTEST
-#ifdef DISKTEST
-	const char* program = "C:\\Users\\eviat\\Documents\\university\\Semester 5\\Computer Organization\\source\\CompOrgProj\\test_programs\\disktest\\disktest.asm";
-	const char* imem = "C:\\Users\\eviat\\Documents\\university\\Semester 5\\Computer Organization\\source\\CompOrgProj\\test_programs\\disktest\\imemin.txt";
-	const char* dmem = "C:\\Users\\eviat\\Documents\\university\\Semester 5\\Computer Organization\\source\\CompOrgProj\\test_programs\\disktest\\dmemin.txt";
-
-	memcpy(argv[1], program, strlen(program)+1);
-	memcpy(argv[2], imem, strlen(imem)+1);
-	memcpy(argv[3], dmem, strlen(dmem)+1);
+#define DISKTEST "disktest"
+#if defined(MULMAT) || defined(BINOM) || defined(CIRCLE) || defined(DISKTEST)
+	const char* directory = "..\\..\\..\\test_programs";
+	sprintf(argv[1], "%s\\%s\\%s.asm", directory, DISKTEST, DISKTEST);
+	sprintf(argv[2], "%s\\%s\\%s", directory, DISKTEST, "imemin.txt");
+	sprintf(argv[3], "%s\\%s\\%s", directory, DISKTEST, "dmemin.txt");
 #endif
 
 	char line[LINE_MAX_LENGTH_IN_BYTES];

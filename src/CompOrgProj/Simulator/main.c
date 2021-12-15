@@ -15,38 +15,23 @@
 
 int main(int argc, char* argv[])
 {
-#define DISKTEST
-#undef DISKTEST
-#ifdef DISKTEST
-    const char* one = "C:\\Users\\eviat\\Documents\\university\\Semester 5\\Computer Organization\\source\\CompOrgProj\\test_programs\\disktest\\imemin.txt";
-    const char* two = "C:\\Users\\eviat\\Documents\\university\\Semester 5\\Computer Organization\\source\\CompOrgProj\\test_programs\\disktest\\dmemin.txt";
-    const char* three = "C:\\Users\\eviat\\Documents\\university\\Semester 5\\Computer Organization\\source\\CompOrgProj\\test_programs\\disktest\\diskin.txt";
-    const char* four = "C:\\Users\\eviat\\Documents\\university\\Semester 5\\Computer Organization\\source\\CompOrgProj\\test_programs\\disktest\\irq2in.txt";
-    const char* five= "C:\\Users\\eviat\\Documents\\university\\Semester 5\\Computer Organization\\source\\CompOrgProj\\test_programs\\disktest\\dmemout.txt";
-    const char* six = "C:\\Users\\eviat\\Documents\\university\\Semester 5\\Computer Organization\\source\\CompOrgProj\\test_programs\\disktest\\regout.txt";
-    const char* seven= "C:\\Users\\eviat\\Documents\\university\\Semester 5\\Computer Organization\\source\\CompOrgProj\\test_programs\\disktest\\trace.txt";
-    const char* eight = "C:\\Users\\eviat\\Documents\\university\\Semester 5\\Computer Organization\\source\\CompOrgProj\\test_programs\\disktest\\hwregtrace.txt";
-    const char* nine = "C:\\Users\\eviat\\Documents\\university\\Semester 5\\Computer Organization\\source\\CompOrgProj\\test_programs\\disktest\\cycles.txt";
-    const char* ten= "C:\\Users\\eviat\\Documents\\university\\Semester 5\\Computer Organization\\source\\CompOrgProj\\test_programs\\disktest\\leds.txt";
-    const char* eleven = "C:\\Users\\eviat\\Documents\\university\\Semester 5\\Computer Organization\\source\\CompOrgProj\\test_programs\\disktest\\display7seg.txt";
-    const char* twelve = "C:\\Users\\eviat\\Documents\\university\\Semester 5\\Computer Organization\\source\\CompOrgProj\\test_programs\\disktest\\diskout.txt";
-    const char* thirteen = "C:\\Users\\eviat\\Documents\\university\\Semester 5\\Computer Organization\\source\\CompOrgProj\\test_programs\\disktest\\monitor.txt";
-    const char* fourteen = "C:\\Users\\eviat\\Documents\\university\\Semester 5\\Computer Organization\\source\\CompOrgProj\\test_programs\\disktest\\monitor.yuv";
-
-    memcpy(argv[1], one, strlen(one) + 1);
-    memcpy(argv[2], two, strlen(two) + 1);
-    memcpy(argv[3], three, strlen(three) + 1);
-    memcpy(argv[4], four, strlen(four) + 1);
-    memcpy(argv[5], five, strlen(five) + 1);
-    memcpy(argv[6], six, strlen(six) + 1);
-    memcpy(argv[7], seven, strlen(seven) + 1);
-    memcpy(argv[8], eight, strlen(eight) + 1);
-    memcpy(argv[9], nine, strlen(nine) + 1);
-    memcpy(argv[10], ten, strlen(ten) + 1);
-    memcpy(argv[11], eleven, strlen(eleven) + 1);
-    memcpy(argv[12], twelve, strlen(twelve) + 1);
-    memcpy(argv[13], thirteen, strlen(thirteen) + 1);
-    memcpy(argv[14], fourteen, strlen(fourteen) + 1);
+#define DISKTEST "disktest"
+#if defined(MULMAT) || defined(BINOM) || defined(CIRCLE) || defined(DISKTEST)
+    const char* directory = "..\\..\\..\\test_programs";
+    sprintf(argv[1], "%s\\%s\\%s", directory, DISKTEST, "imemin.txt");
+    sprintf(argv[2], "%s\\%s\\%s", directory, DISKTEST, "dmemin.txt");
+    sprintf(argv[3], "%s\\%s\\%s", directory, DISKTEST, "diskin.txt");
+    sprintf(argv[4], "%s\\%s\\%s", directory, DISKTEST, "irq2in.txt");
+    sprintf(argv[5], "%s\\%s\\%s", directory, DISKTEST, "dmemout.txt");
+    sprintf(argv[6], "%s\\%s\\%s", directory, DISKTEST, "regout.txt");
+    sprintf(argv[7], "%s\\%s\\%s", directory, DISKTEST, "trace.txt");
+    sprintf(argv[8], "%s\\%s\\%s", directory, DISKTEST, "hwregtrace.txt");
+    sprintf(argv[9], "%s\\%s\\%s", directory, DISKTEST, "cycles.txt");
+    sprintf(argv[10], "%s\\%s\\%s", directory, DISKTEST, "leds.txt");
+    sprintf(argv[11], "%s\\%s\\%s", directory, DISKTEST, "display7seg.txt");
+    sprintf(argv[12], "%s\\%s\\%s", directory, DISKTEST, "diskout.txt");
+    sprintf(argv[13], "%s\\%s\\%s", directory, DISKTEST, "monitor.txt");
+    sprintf(argv[14], "%s\\%s\\%s", directory, DISKTEST, "monitor.yuv");
 #endif
 
     // BOOT 
