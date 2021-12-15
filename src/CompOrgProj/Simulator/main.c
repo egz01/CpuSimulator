@@ -92,6 +92,11 @@ int main(int argc, char* argv[])
         // execute instruction
         execute(&current, &PC, registers, IOregisters, data_memory, &halt, &in_interrupt);
 
+        // we allow changes to $zero, $imm1, $imm2 but change them right back :)
+        registers[ZERO] = 0;
+        registers[IMM1] = current.immediate1;
+        registers[IMM2] = current.immediate2;
+
         // hardware tracing
         if (current.opcode == OUT || current.opcode == IN)
         {
