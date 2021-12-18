@@ -322,12 +322,15 @@ int read_line(FILE* input, char* line)
 void string_to_lower(const char* input, char* output) {
 	char c;
 	int i = 0;
-	while ((c = input[i]) != '\0')
+	if (input)
 	{
-		output[i] = tolower(input[i]);
-		i++;
+		while ((c = input[i]) != '\0')
+		{
+			output[i] = tolower(input[i]);
+			i++;
+		}
+		output[i] = '\0';
 	}
-	output[i] = '\0';
 }
 
 /// <summary>
