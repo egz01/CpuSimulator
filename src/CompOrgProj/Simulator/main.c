@@ -6,7 +6,6 @@
 #include "simulator_functions.h"
 
 #define DEBUG
-#undef DEBUG
 #ifdef DEBUG
 #define log printf
 #else
@@ -15,23 +14,23 @@
 
 int main(int argc, char* argv[])
 {
-#define DISKTEST "disktest"
-#if defined(MULMAT) || defined(BINOM) || defined(CIRCLE) || defined(DISKTEST)
+#define TEST "mulmat"
+#if defined(TEST)
     const char* directory = "..\\..\\..\\test_programs";
-    sprintf(argv[1], "%s\\%s\\%s", directory, DISKTEST, "imemin.txt");
-    sprintf(argv[2], "%s\\%s\\%s", directory, DISKTEST, "dmemin.txt");
-    sprintf(argv[3], "%s\\%s\\%s", directory, DISKTEST, "diskin.txt");
-    sprintf(argv[4], "%s\\%s\\%s", directory, DISKTEST, "irq2in.txt");
-    sprintf(argv[5], "%s\\%s\\%s", directory, DISKTEST, "dmemout.txt");
-    sprintf(argv[6], "%s\\%s\\%s", directory, DISKTEST, "regout.txt");
-    sprintf(argv[7], "%s\\%s\\%s", directory, DISKTEST, "trace.txt");
-    sprintf(argv[8], "%s\\%s\\%s", directory, DISKTEST, "hwregtrace.txt");
-    sprintf(argv[9], "%s\\%s\\%s", directory, DISKTEST, "cycles.txt");
-    sprintf(argv[10], "%s\\%s\\%s", directory, DISKTEST, "leds.txt");
-    sprintf(argv[11], "%s\\%s\\%s", directory, DISKTEST, "display7seg.txt");
-    sprintf(argv[12], "%s\\%s\\%s", directory, DISKTEST, "diskout.txt");
-    sprintf(argv[13], "%s\\%s\\%s", directory, DISKTEST, "monitor.txt");
-    sprintf(argv[14], "%s\\%s\\%s", directory, DISKTEST, "monitor.yuv");
+    sprintf(argv[1], "%s\\%s\\%s", directory, TEST, "imemin.txt");
+    sprintf(argv[2], "%s\\%s\\%s", directory, TEST, "dmemin.txt");
+    sprintf(argv[3], "%s\\%s\\%s", directory, TEST, "diskin.txt");
+    sprintf(argv[4], "%s\\%s\\%s", directory, TEST, "irq2in.txt");
+    sprintf(argv[5], "%s\\%s\\%s", directory, TEST, "dmemout.txt");
+    sprintf(argv[6], "%s\\%s\\%s", directory, TEST, "regout.txt");
+    sprintf(argv[7], "%s\\%s\\%s", directory, TEST, "trace.txt");
+    sprintf(argv[8], "%s\\%s\\%s", directory, TEST, "hwregtrace.txt");
+    sprintf(argv[9], "%s\\%s\\%s", directory, TEST, "cycles.txt");
+    sprintf(argv[10], "%s\\%s\\%s", directory, TEST, "leds.txt");
+    sprintf(argv[11], "%s\\%s\\%s", directory, TEST, "display7seg.txt");
+    sprintf(argv[12], "%s\\%s\\%s", directory, TEST, "diskout.txt");
+    sprintf(argv[13], "%s\\%s\\%s", directory, TEST, "monitor.txt");
+    sprintf(argv[14], "%s\\%s\\%s", directory, TEST, "monitor.yuv");
 #endif
 
     // BOOT 
@@ -91,6 +90,11 @@ int main(int argc, char* argv[])
 
         // execute instruction
         execute(&current, &PC, registers, IOregisters, data_memory, &halt, &in_interrupt);
+
+        // we allow changes to $zero, $imm1, $imm2 but change them right back :)
+        registers[ZERO] = 0;
+        registers[IMM1] = current.immediate1;
+        registers[IMM2] = current.immediate2;
 
         // hardware tracing
         if (current.opcode == OUT || current.opcode == IN)
