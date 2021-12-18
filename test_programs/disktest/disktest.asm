@@ -1,5 +1,5 @@
 		out $zero, $zero, $imm1, $imm1, 1, 0		# enable irq1
-		out $zero, $imm1, $zero, $imm2, 6, irq1		# set irqhandler as L1
+		out $zero, $imm1, $zero, $imm2, 6, irq1		# set irqhandler as irq1
 		add $t0, $imm1, $zero, $zero, 7, 0			# set i = 7
 		add $t1, $zero, $zero, $zero, 0, 0			# set $t1 to 0, used as addr in memory
 for:   	beq $zero, $t0, $imm1, $imm2, -1, end		# iterate until $t0 == -1

@@ -7,12 +7,12 @@
 
 int main(int argc, char* argv[])
 {
-#define DISKTEST "disktest"
-#if defined(MULMAT) || defined(BINOM) || defined(CIRCLE) || defined(DISKTEST)
+#define TEST "mulmat"
+#if defined(TEST)
 	const char* directory = "..\\..\\..\\test_programs";
-	sprintf(argv[1], "%s\\%s\\%s.asm", directory, DISKTEST, DISKTEST);
-	sprintf(argv[2], "%s\\%s\\%s", directory, DISKTEST, "imemin.txt");
-	sprintf(argv[3], "%s\\%s\\%s", directory, DISKTEST, "dmemin.txt");
+	sprintf(argv[1], "%s\\%s\\%s.asm", directory, TEST, TEST);
+	sprintf(argv[2], "%s\\%s\\%s", directory, TEST, "imemin.txt");
+	sprintf(argv[3], "%s\\%s\\%s", directory, TEST, "dmemin.txt");
 #endif
 
 	char line[LINE_MAX_LENGTH_IN_BYTES];
