@@ -8,6 +8,7 @@
 int main(int argc, char* argv[])
 {
 #define TEST "mulmat"
+#undef TEST
 #if defined(TEST)
 	const char* directory = "..\\..\\..\\test_programs";
 	sprintf(argv[1], "%s\\%s\\%s.asm", directory, TEST, TEST);
@@ -30,7 +31,9 @@ int main(int argc, char* argv[])
 	char* sLabelAddresses[4096] = {0};
 	
 	int i = 0;
-	while ((line_length = read_line(fProgram, line)) > 0) {
+	while (!feof(fProgram)) {
+		if (read_line(fProgram, line) == 0) continue; // empty line, not interesting
+
 		BOOL inline_label = 0;
 		temp_label = parse_label(line, cleaned_line, &inline_label);
 		if (temp_label) { // this line is a label, doesn't count as instruction
@@ -41,13 +44,17 @@ int main(int argc, char* argv[])
 		{
 			handle_pseudo(cleaned_line, fDmemin);
 		}
-		else // actual instruction
+		else {
+			// actual instruction
 			instruction_counter++;
+		}
 	}
 	
 	fseek(fProgram, 0, 0);
 
-	while (line_length = read_line(fProgram, line) > 0) {
+	while (!feof(fProgram)) {
+		if (read_line(fProgram, line) == 0) continue; // empty line, not interesting
+
 		instType = parse_line(line, &sInstruction, sLabelAddresses);
 
 		switch (instType)
