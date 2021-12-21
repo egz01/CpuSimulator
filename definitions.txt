@@ -1,9 +1,3 @@
-main function - parses cla, then calls asm reader, imemin writer
-
-.word support - check if address exists, if so change according to parameter, if not generate zeroed lines until necessary address exsits.
-
-imemin writer - iterate over Instruction array, for each inst create hex line and write each line to imemin.txt
-
-asm reader - reads .asm file line by line calls parser function, returns array of Instruction struct. handles label translation
-
-instruction parser - recevies a line (after label translation) and parses it into Instruction struct.
+version https://git-lfs.github.com/spec/v1
+oid sha256:b5796991775c71d280cd2a6f5df8fff9bf0374d3ed2e6f80f7598c77bf51815d
+size 550

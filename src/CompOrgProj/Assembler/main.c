@@ -7,8 +7,7 @@
 
 int main(int argc, char* argv[])
 {
-#define TEST "mulmat"
-#undef TEST
+#define TEST "circle"
 #if defined(TEST)
 	const char* directory = "..\\..\\..\\test_programs";
 	sprintf(argv[1], "%s\\%s\\%s.asm", directory, TEST, TEST);
@@ -51,7 +50,7 @@ int main(int argc, char* argv[])
 	}
 	
 	fseek(fProgram, 0, 0);
-
+	int line_counter = 1;
 	while (!feof(fProgram)) {
 		if (read_line(fProgram, line) == 0) continue; // empty line, not interesting
 
@@ -61,10 +60,10 @@ int main(int argc, char* argv[])
 		{
 		case REGULAR:
 			encode_instruction(&sInstruction, fImemin);
-			break;
+			line_counter++;
 		case PSEUDO:
-			break;
 		case LABEL:
+		case COMMENT:
 			break;
 		}
 	}

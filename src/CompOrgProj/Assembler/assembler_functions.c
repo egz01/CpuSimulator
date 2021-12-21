@@ -66,7 +66,7 @@ void handle_pseudo(const char* line, FILE* dmemin) {
 /// </summary>
 /// <param name="to_fix">input string with various extra spaces and tabs</param>
 /// <param name="fixed">output string (should be at least of equal size to input string) with no extra whitespaces or tabs</param>
-void remove_extra_spaces_and_tabs(char* to_fix, char* fixed)
+int remove_extra_spaces_and_tabs(char* to_fix, char* fixed)
 {
 	char c;
 	int i = 0;
@@ -126,6 +126,8 @@ void remove_extra_spaces_and_tabs(char* to_fix, char* fixed)
 		strncpy(fixed, temp, strlen(temp));
 		fixed[len - 1] = '\0';
 	}
+
+	return j;
 }
 
 /// <summary>
@@ -138,9 +140,11 @@ void remove_extra_spaces_and_tabs(char* to_fix, char* fixed)
 LineType parse_line(char* line, Instruction* output, char* labels[INSTRUCTIONS_DEPTH]) {
 	LineType retval = REGULAR;
 	char cleaned_line[LINE_MAX_LENGTH_IN_BYTES];
-	remove_extra_spaces_and_tabs(line, cleaned_line);
-	
-	if (is_label(cleaned_line)) {
+	int cleaned_length = remove_extra_spaces_and_tabs(line, cleaned_line);
+
+	if (cleaned_length == 0)
+		retval = COMMENT;
+	else if (is_label(cleaned_line)) {
 		// do nothing
 		// check if inline label:
 		strtok(cleaned_line, ":");
@@ -526,7 +530,7 @@ int get_numeric_value(const char* field, char* labels[INSTRUCTIONS_DEPTH]) {
 	{
 		sscanf(temp+2, "%x", &retval);
 	}
-	else if ('a' < temp[0] && temp[0] < 'z' && labels) // label
+	else if ('a' <= temp[0] && temp[0] <= 'z' && labels) // label
 	{
 		int i = 0;
 		for (; i < INSTRUCTIONS_DEPTH; i++)
