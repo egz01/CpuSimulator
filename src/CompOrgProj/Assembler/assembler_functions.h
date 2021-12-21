@@ -15,7 +15,7 @@ void edit_memory(int address, int value, FILE* dmemin);
 int read_line(FILE* input, char* line);
 LineType parse_line(char* line, Instruction* output, char* labels[INSTRUCTIONS_DEPTH]);
 int encode_instruction(Instruction* input, FILE* imemin);
-void remove_extra_spaces_and_tabs(const char* to_fix, char* fixed);
+int remove_extra_spaces_and_tabs(const char* to_fix, char* fixed);
 OpCode get_op_code_from_string(const char* opcode);
 Register get_register_from_string(const char* field);
 void string_to_lower(const char* input, char* output);

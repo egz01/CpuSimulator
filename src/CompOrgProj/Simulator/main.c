@@ -6,6 +6,7 @@
 #include "simulator_functions.h"
 
 #define DEBUG
+#undef DEBUG
 #ifdef DEBUG
 #define log printf
 #else
@@ -14,7 +15,7 @@
 
 int main(int argc, char* argv[])
 {
-#define TEST "mulmat"
+#define TEST "disktest"
 #if defined(TEST)
     const char* directory = "..\\..\\..\\test_programs";
     sprintf(argv[1], "%s\\%s\\%s", directory, TEST, "imemin.txt");
@@ -76,11 +77,11 @@ int main(int argc, char* argv[])
 
     while (!halt && PC < INSTRUCTIONS_DEPTH)
     {
-        log("executing instruction: %x\r\n", PC);
+        log("executing instruction: %d\r\n", PC+1);
 
         // fetch & decode instruction
         parse_instruction(instructions_memory[PC], &current);
-
+        
         // hard-wired values:
         registers[ZERO] = 0;
         registers[IMM1] = current.immediate1;
@@ -90,7 +91,6 @@ int main(int argc, char* argv[])
 
         // execute instruction
         execute(&current, &PC, registers, IOregisters, data_memory, &halt, &in_interrupt);
-
         // we allow changes to $zero, $imm1, $imm2 but change them right back :)
         registers[ZERO] = 0;
         registers[IMM1] = current.immediate1;
@@ -116,36 +116,36 @@ int main(int argc, char* argv[])
         }
 
         // disk logic (irq1)
-        int cmd = 0;
         if (IOregisters[DISKSTATUS] == FREE) {
-            cmd = IOregisters[DISKCMD];
-            switch (cmd)
+            if (IOregisters[DISKCMD])
             {
-                case(READ):
-                    // copy 128 words from disk sector to memory_data[DISKBUFFER]
-                    memcpy(data_memory + IOregisters[DISKBUFFER], disk + IOregisters[DISKSECTOR]*SECTOR_SIZE_IN_WORDS, SECTOR_SIZE_IN_BYTES);
-                    IOregisters[DISKSTATUS] = BUSY;
-                    disk_counter = 0;
-                    break;
-
-                case(WRITE):
-                    // copy 128 words from memory data[DISKBUFFER] to disk sector
-                    memcpy(disk + IOregisters[DISKSECTOR]*SECTOR_SIZE_IN_WORDS, data_memory + IOregisters[DISKBUFFER], SECTOR_SIZE_IN_BYTES);
-                    IOregisters[DISKSTATUS] = BUSY;
-                    disk_counter = 0;
-                    break;
-
-                case(NOOP):
-                default:
-                    break;
+                IOregisters[DISKSTATUS] = BUSY;
+                disk_counter = 0;
             }
         }
-
         else if (IOregisters[DISKSTATUS] == BUSY)
         {
             disk_counter++;
             if (disk_counter == DISK_OPERATION_CYCLE_LENGTH) {
                 IOregisters[DISKSTATUS] = FREE;
+                int cmd = 0;
+                cmd = IOregisters[DISKCMD];
+                switch (cmd)
+                {
+                case(READ):
+                    // copy 128 words from disk sector to memory_data[DISKBUFFER]
+                    memcpy(data_memory + IOregisters[DISKBUFFER], disk + IOregisters[DISKSECTOR] * SECTOR_SIZE_IN_WORDS, SECTOR_SIZE_IN_BYTES);
+                    break;
+
+                case(WRITE):
+                    // copy 128 words from memory data[DISKBUFFER] to disk sector
+                    memcpy(disk + IOregisters[DISKSECTOR] * SECTOR_SIZE_IN_WORDS, data_memory + IOregisters[DISKBUFFER], SECTOR_SIZE_IN_BYTES);
+                    break;
+
+                case(NOOP):
+                default:
+                    break;
+                }
                 IOregisters[DISKCMD] = NOOP;
                 IOregisters[IRQ1STATUS] = ENABLED;
             }
@@ -160,7 +160,11 @@ int main(int argc, char* argv[])
         // monitor logic
         if (IOregisters[MONITORCMD])
         {
-            screen_buffer[IOregisters[MONITORADDR]] = IOregisters[MONITORDATA];
+            if (IOregisters[MONITORADDR] < SCREEN_X * SCREEN_Y)
+            {
+                screen_buffer[IOregisters[MONITORADDR]] = IOregisters[MONITORDATA];
+                log("writing %02x to %d\n", IOregisters[MONITORDATA], IOregisters[MONITORADDR]);
+            }
             IOregisters[MONITORCMD] = 0; // handled monitor updating, toggle command bit
         }
 
@@ -207,7 +211,7 @@ int main(int argc, char* argv[])
     dump_data(dmemout, data_memory, memory_depth + 1);           // dump to dmemout.txt
     dump_data(regout, registers + 3, NUM_REGISTERS - 3);         // dump to regout.txt
     fprintf(cycles, "%ld\n", cycles_counter);                    // dump to cycles.txt
-    dump_data(diskout, disk, disk_depth);                        // dump to diskout.txt
+    dump_data(diskout, disk, disk_depth + 1);                    // dump to diskout.txt
     dump_pixels_string(monitor, screen_buffer);                  // dump to monitor.txt
     dump_pixels_binary(monitor_yuv, screen_buffer);              // dump to monitor.yuv
 
