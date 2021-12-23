@@ -39,12 +39,33 @@ void edit_memory(int address, int value, FILE* dmemin) {
 	}
 }
 
+void dump_data(FILE* output_stream, DATA_TYPE* output_data, int size)
+{
+	for (int i = 0; i < size; i++)
+	{
+		fprintf(output_stream, "%08X\n", output_data[i]);
+	}
+}
+
+int find_dmemory_index(DATA_TYPE* data_memory, int max_size)
+{
+	int last_non_zero_index = 0;
+	for (int i = 0; i < max_size; i++)
+	{
+		if (data_memory[i] != 0)
+		{
+			last_non_zero_index = i;
+		}
+	}
+	return last_non_zero_index;
+}
+
 /// <summary>
 /// used to handle .word insturctions
 /// </summary>
 /// <param name="line"> - a stripped line containing a .word instruction</param>
 /// <param name="dmemin"> - stream open for writing</param>
-void handle_pseudo(const char* line, FILE* dmemin) {
+void handle_pseudo(const char* line, int* memory_data) {
 	char* field;
 	char* delim = " ";
 	Word instruction;
@@ -58,7 +79,7 @@ void handle_pseudo(const char* line, FILE* dmemin) {
 	field = strtok(NULL, delim);
 	instruction.value = get_numeric_value(field, NULL);
 
-	edit_memory(instruction.address, instruction.value, dmemin);
+	memory_data[instruction.address] = instruction.value;
 }
 
 /// <summary>
