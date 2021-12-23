@@ -27,7 +27,8 @@ int main(int argc, char* argv[])
 	LineType instType = 0;
 	int line_length;
 	char* temp_label;
-	char* sLabelAddresses[4096] = {0};
+	char* sLabelAddresses[INSTRUCTIONS_DEPTH] = {0};
+	int* data_memory = (int*)calloc(MEMORY_DEPTH, sizeof(int));
 	
 	int i = 0;
 	while (!feof(fProgram)) {
@@ -41,7 +42,7 @@ int main(int argc, char* argv[])
 		}
 		else if (is_pseudo(cleaned_line))
 		{
-			handle_pseudo(cleaned_line, fDmemin);
+			handle_pseudo(cleaned_line, data_memory);
 		}
 		else {
 			// actual instruction
@@ -68,6 +69,9 @@ int main(int argc, char* argv[])
 		}
 	}
 	fflush(fImemin);
+
+	int depth = find_dmemory_index(data_memory, MEMORY_DEPTH);
+	dump_data(fDmemin, data_memory, depth + 1);
 
 	// clean up dynamic memory
 	for (int i = 0; i < INSTRUCTIONS_DEPTH; i++)
