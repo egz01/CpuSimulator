@@ -12,9 +12,11 @@ Further explanation regarding each I/O file can be found in docs/isaproject_2611
 To support easy development and debugging, the command line arguments are supplied via project configuration; however, at later stages of the development it became important to support differnet input/output locations and files, therefore usage of #defines within in main.c was made, i.e. use #define TEST "<test_name>" alter the input/output files' locations to a directory that hosts disktest.asm instead of the generic program.asm (filenames generally don't change, except for the program's name).
 
 current solution looks like this in Simulator:
+
 ![image](https://user-images.githubusercontent.com/12452166/147394914-2089f904-43ea-4b96-9ccc-3f5b685ffed7.png)
 
 and Assembler:
+
 ![image](https://user-images.githubusercontent.com/12452166/147394912-e0f5d5e7-7535-4f50-88bd-6ebfe0aff683.png)
 
 make sure you use #define <PROGRAM> "program", since the string value is used to determine the enitre path!
