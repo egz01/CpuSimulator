@@ -79,7 +79,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <ExternalIncludePath>C:\Users\eviat\Documents\university\Semester 5\Computer Organization\source\CompOrgProj\src\CompOrgProj\include;$(ExternalIncludePath)</ExternalIncludePath>
+    <ExternalIncludePath>$(ExternalIncludePath)</ExternalIncludePath>
     <TargetName>sim</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -145,10 +145,14 @@
   <ItemGroup>
     <ClCompile Include="main.c" />
     <ClCompile Include="simulator_functions.c" />
-    <ClCompile Include="simulator_functions.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\include\structs.h" />
+    <ClInclude Include="definitions.h" />
+    <ClInclude Include="structs.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

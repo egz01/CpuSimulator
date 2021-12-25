@@ -1,12 +1,12 @@
 #ifndef SIM_FUNCTIONS
 #define SIM_FUNCTIONS
 #define _CRT_SECURE_NO_WARNINGS
-#include <definitions.h>
-#include <structs.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+#include "definitions.h"
+#include "structs.h"
 
 void parse_instruction(INSTRUCTION_TYPE instruction_bytes, Instruction* inst);
 void load_instruction_bytes(FILE*, INSTRUCTION_TYPE*);

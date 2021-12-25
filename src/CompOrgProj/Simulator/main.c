@@ -1,8 +1,8 @@
 // Simulator's main function - entry point of the program.
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
-#include <structs.h>
-#include <definitions.h>
+#include "structs.h"
+#include "definitions.h"
 #include "simulator_functions.h"
 
 #define DEBUG
@@ -16,6 +16,7 @@
 int main(int argc, char* argv[])
 {
 #define TEST "disktest"
+#undef TEST
 #if defined(TEST)
     const char* directory = "..\\..\\..\\test_programs";
     sprintf(argv[1], "%s\\%s\\%s", directory, TEST, "imemin.txt");
