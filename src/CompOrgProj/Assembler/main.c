@@ -7,7 +7,7 @@
 
 int main(int argc, char* argv[])
 {
-#define TEST "circle"
+#define TEST "binom"
 #undef TEST
 #if defined(TEST)
 	const char* directory = "..\\..\\..\\test_programs";
@@ -37,6 +37,7 @@ int main(int argc, char* argv[])
 
 		BOOL inline_label = 0;
 		temp_label = parse_label(line, cleaned_line, &inline_label);
+		if (strlen(cleaned_line) == 0) continue; // empty line, not interesting
 		if (temp_label) { // this line is a label, doesn't count as instruction
 			sLabelAddresses[instruction_counter] = temp_label;
 			instruction_counter += (int)inline_label;
