@@ -34,13 +34,13 @@
     </Text>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\include\definitions.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\structs.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="assembler_functions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="definitions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="structs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

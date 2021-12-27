@@ -1,44 +1,11 @@
 #include "assembler_functions.h"
 
 /// <summary>
-/// used to alter data to value in memory in given addres
+/// dumps the memory data to a file in the specified format
 /// </summary>
-/// <param name="address"> - address to alter in memory</param>
-/// <param name="value"> - value to edit memory to</param>
-/// <param name="dmemin"> - output stream</param>
-void edit_memory(int address, int value, FILE* dmemin) {
-	char empty_cell[MEMORY_SIZE_IN_CHARS + 1] = "00000000";
-	char hex[MEMORY_SIZE_IN_CHARS + 1];
-	int line_counter = 0;
-	BOOL reached = 0;
-
-	sprintf(hex, "%X", value);
-	int to_pad = MEMORY_SIZE_IN_CHARS - strlen(hex);
-
-	if (to_pad)
-	{
-		memcpy(empty_cell + to_pad, hex, MEMORY_SIZE_IN_CHARS - to_pad + 1);
-		memcpy(hex, empty_cell, MEMORY_SIZE_IN_CHARS + 1);
-		memcpy(empty_cell, "00000000", MEMORY_SIZE_IN_CHARS);
-	}
-
-	while (line_counter < MEMORY_DEPTH && !reached)
-	{
-		if (line_counter == address)
-		{
-			fwrite(hex, 1, strlen(hex), dmemin);
-			fwrite("\n", 1, strlen("\n"), dmemin);
-			reached = 1; // maybe skip this, and then output a 4096 memory cells long dmemin.txt
-		}
-		else
-		{
-			fwrite(empty_cell, 1, strlen(empty_cell), dmemin);
-			fwrite("\n", 1, strlen("\n"), dmemin);
-		}
-		line_counter++;
-	}
-}
-
+/// <param name="output_stream">open write file</param>
+/// <param name="output_data">pointer to memory array</param>
+/// <param name="size">depth to write</param>
 void dump_data(FILE* output_stream, DATA_TYPE* output_data, int size)
 {
 	for (int i = 0; i < size; i++)
@@ -47,6 +14,12 @@ void dump_data(FILE* output_stream, DATA_TYPE* output_data, int size)
 	}
 }
 
+/// <summary>
+/// finds the last non-zero address in memory
+/// </summary>
+/// <param name="data_memory">memory array</param>
+/// <param name="max_size">memory depth</param>
+/// <returns>last non-zero address</returns>
 int find_dmemory_index(DATA_TYPE* data_memory, int max_size)
 {
 	int last_non_zero_index = 0;

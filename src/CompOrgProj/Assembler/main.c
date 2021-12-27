@@ -1,13 +1,14 @@
 // Assembler's main function - entry point of the program
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
-#include <structs.h>
-#include <definitions.h>
+#include "structs.h"
+#include "definitions.h"
 #include "assembler_functions.h"
 
 int main(int argc, char* argv[])
 {
 #define TEST "circle"
+#undef TEST
 #if defined(TEST)
 	const char* directory = "..\\..\\..\\test_programs";
 	sprintf(argv[1], "%s\\%s\\%s.asm", directory, TEST, TEST);
@@ -25,11 +26,11 @@ int main(int argc, char* argv[])
 	FILE* fDmemin = fopen(argv[3], "w");
 	int instruction_counter = 0;
 	LineType instType = 0;
-	int line_length;
 	char* temp_label;
 	char* sLabelAddresses[INSTRUCTIONS_DEPTH] = {0};
 	int* data_memory = (int*)calloc(MEMORY_DEPTH, sizeof(int));
 	
+	// create a label list
 	int i = 0;
 	while (!feof(fProgram)) {
 		if (read_line(fProgram, line) == 0) continue; // empty line, not interesting
