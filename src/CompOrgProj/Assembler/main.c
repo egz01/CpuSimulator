@@ -7,7 +7,7 @@
 
 int main(int argc, char* argv[])
 {
-#define TEST "binom"
+#define TEST "mulmat"
 #undef TEST
 #if defined(TEST)
 	const char* directory = "..\\..\\..\\test_programs";
@@ -45,6 +45,10 @@ int main(int argc, char* argv[])
 		else if (is_pseudo(cleaned_line))
 		{
 			handle_pseudo(cleaned_line, data_memory);
+		}
+		else if (is_all_comment(cleaned_line))
+		{
+			// do nothing
 		}
 		else {
 			// actual instruction
