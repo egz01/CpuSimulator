@@ -15,7 +15,7 @@
 
 int main(int argc, char* argv[])
 {
-#define TEST "binom"
+#define TEST "mulmat"
 #undef TEST
 #if defined(TEST)
     const char* directory = "..\\..\\..\\test_programs";
